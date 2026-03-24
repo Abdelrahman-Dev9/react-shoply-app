@@ -11,6 +11,7 @@
         "react-dom": "^19.2.4",
         "react-hook-form": "^7.72.0",
         "react-icons": "^5.6.0",
+        "react-otp-input": "^3.1.1",
         "react-redux": "^9.2.0",
         "react-router-dom": "^7.13.2",
         "zod": "^4.3.6",
@@ -427,6 +428,8 @@
     "react-hook-form": ["react-hook-form@7.72.0", "", { "peerDependencies": { "react": "^16.8.0 || ^17 || ^18 || ^19" } }, "sha512-V4v6jubaf6JAurEaVnT9aUPKFbNtDgohj5CIgVGyPHvT9wRx5OZHVjz31GsxnPNI278XMu+ruFz+wGOscHaLKw=="],
 
     "react-icons": ["react-icons@5.6.0", "", { "peerDependencies": { "react": "*" } }, "sha512-RH93p5ki6LfOiIt0UtDyNg/cee+HLVR6cHHtW3wALfo+eOHTp8RnU2kRkI6E+H19zMIs03DyxUG/GfZMOGvmiA=="],
+
+    "react-otp-input": ["react-otp-input@3.1.1", "", { "peerDependencies": { "react": ">=16.8.6 || ^17.0.0 || ^18.0.0", "react-dom": ">=16.8.6 || ^17.0.0 || ^18.0.0" } }, "sha512-bjPavgJ0/Zmf/AYi4onj8FbH93IjeD+e8pWwxIJreDEWsU1ILR5fs8jEJmMGWSBe/yyvPP6X/W6Mk9UkOCkTPw=="],
 
     "react-redux": ["react-redux@9.2.0", "", { "dependencies": { "@types/use-sync-external-store": "^0.0.6", "use-sync-external-store": "^1.4.0" }, "peerDependencies": { "@types/react": "^18.2.25 || ^19", "react": "^18.0 || ^19", "redux": "^5.0.0" }, "optionalPeers": ["@types/react", "redux"] }, "sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g=="],
 
