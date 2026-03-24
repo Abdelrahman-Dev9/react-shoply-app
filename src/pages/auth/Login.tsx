@@ -2,10 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CiLock, CiMail } from "react-icons/ci";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import LoginImage from "../../assets/login-image.png";
 import logo from "../../assets/logo.png";
-import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 
 const loginSchema = z.object({
   email: z
@@ -20,6 +21,7 @@ const loginSchema = z.object({
 });
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -157,7 +159,7 @@ const Login = () => {
                   </span>
                 </label>
                 <a
-                  href="#"
+                  onClick={() => navigate("/forgetPassword")}
                   className="text-sm font-semibold text-[#1e3a6e] hover:underline underline-offset-2 transition-all"
                 >
                   Forgot password ?
