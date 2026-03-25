@@ -88,15 +88,15 @@ const ForgotPassword = () => {
             {/* Success state */}
             {isSubmitSuccessful ? (
               <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                <div className="rounded-2xl bg-white border border-green-200 p-6 text-center space-y-2 shadow-lg w-[90%] max-w-sm">
+                <div className="rounded-2xl bg-white border border-[#1e3a6e]/20 p-6 text-center space-y-2 shadow-lg w-[90%] max-w-sm">
                   <div className="flex justify-center mb-3">
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-[#1e3a6e]/10 flex items-center justify-center">
                       <svg
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#16a34a"
+                        stroke="#1e3a6e"
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -106,16 +106,17 @@ const ForgotPassword = () => {
                     </div>
                   </div>
 
-                  <p className="font-bold text-green-800 text-lg">
+                  <p className="font-bold text-[#1e3a6e] text-lg">
                     Check your inbox!
                   </p>
 
-                  <p className="text-green-600 text-sm">
+                  <p className="text-gray-500 text-sm">
                     We've sent a password reset code to your email address.
                   </p>
+
                   <button
                     onClick={() => Navigate("/verifyCode")}
-                    className="mt-4 w-full py-2 rounded-lg bg-green-200 text-red text-sm font-semibold "
+                    className="mt-4 w-full py-2 rounded-lg bg-[#1e3a6e] hover:bg-[#162e5a] active:bg-[#0f2040] text-white text-sm font-semibold transition"
                   >
                     OK
                   </button>
