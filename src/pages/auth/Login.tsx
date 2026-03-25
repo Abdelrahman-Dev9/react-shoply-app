@@ -33,10 +33,12 @@ const Login = () => {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    alert(`Logged in as: ${data.email}`);
+  const onSubmit = async () => {
+    try {
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -82,15 +84,20 @@ const Login = () => {
             >
               {/* Email */}
               <div>
-                <label className="block text-[14px] font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-[14px] font-semibold text-gray-700 mb-2"
+                >
                   Email
                 </label>
+
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                     <CiMail size={20} />
                   </span>
 
                   <input
+                    id="email"
                     type="email"
                     placeholder="Email"
                     {...register("email")}
@@ -101,8 +108,9 @@ const Login = () => {
                     }`}
                   />
                 </div>
+
                 {errors.email && (
-                  <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-500">
                     {errors.email.message}
                   </p>
                 )}
@@ -110,14 +118,20 @@ const Login = () => {
 
               {/* Password */}
               <div>
-                <label className="block text-[14px]  font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-[14px] font-semibold text-gray-700 mb-2"
+                >
                   Password
                 </label>
+
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                     <CiLock size={20} />
                   </span>
+
                   <input
+                    id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     {...register("password")}
@@ -127,10 +141,11 @@ const Login = () => {
                         : "border-gray-200 focus:ring-[#1e3a6e]"
                     }`}
                   />
+
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
                     {showPassword ? (
                       <IoEyeOutline size={20} />
@@ -139,8 +154,9 @@ const Login = () => {
                     )}
                   </button>
                 </div>
+
                 {errors.password && (
-                  <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-500">
                     {errors.password.message}
                   </p>
                 )}
@@ -152,27 +168,29 @@ const Login = () => {
                   <input
                     type="checkbox"
                     {...register("rememberMe")}
-                    className="w-4 h-4 rounded border-gray-300 text-[#1e3a6e] accent-[#1e3a6e] cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 accent-[#1e3a6e]"
                   />
                   <span className="text-sm font-semibold text-gray-700">
-                    remember me
+                    Remember me
                   </span>
                 </label>
-                <a
+
+                <button
+                  type="button"
                   onClick={() => navigate("/forgetPassword")}
-                  className="text-sm font-semibold text-[#1e3a6e] hover:underline underline-offset-2 transition-all"
+                  className="text-sm font-semibold text-[#1e3a6e] hover:underline"
                 >
-                  Forgot password ?
-                </a>
+                  Forgot password?
+                </button>
               </div>
 
-              {/* Login Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-[#1e3a6e] hover:bg-[#162e5a] active:bg-[#0f2040] disabled:opacity-70 disabled:cursor-not-allowed text-white font-semibold text-[16px] rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#1e3a6e] hover:bg-[#162e5a] disabled:opacity-70 text-white font-semibold text-[16px] rounded-xl shadow-md flex items-center justify-center"
               >
-                {isSubmitting ? <>loading...</> : "Log in"}
+                {isSubmitting ? "Loading..." : "Log in"}
               </button>
             </form>
           </div>
