@@ -10,12 +10,12 @@ import {
 } from "lucide-react";
 
 export const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", badge: null, active: true },
-  { icon: ClipboardList, label: "Order list", badge: 5, active: false },
-  { icon: Package, label: "Products", badge: 5, active: false },
-  { icon: Users, label: "Users", badge: 45, active: false },
-  { icon: ShieldCheck, label: "Admins", badge: 10, active: false },
-  { icon: Tag, label: "Categories", badge: 4, active: false },
-  { icon: Bell, label: "Notifications", badge: 3, active: false },
-  { icon: BarChart2, label: "Reports", badge: null, active: false },
+  { icon: LayoutDashboard, label: "Dashboard", path: "dashboard", badge: null },
+  { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
+  { icon: Package, label: "Products", path: "products", badge: 5 },
+  { icon: Users, label: "Users", path: "users", badge: 45 },
+  { icon: ShieldCheck, label: "Admins", path: "admins", badge: 10 },
+  { icon: Tag, label: "Categories", path: "categories", badge: 4 },
+  { icon: Bell, label: "Notifications", path: "notifications", badge: 3 },
+  { icon: BarChart2, label: "Reports", path: "reports", badge: null },
 ];

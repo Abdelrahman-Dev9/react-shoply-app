@@ -1,9 +1,15 @@
 import { Route, Routes } from "react-router-dom";
+
 import ForgetPassword from "./pages/auth/ForgetPassword";
 import Login from "./pages/auth/Login";
 import NewPassword from "./pages/auth/NewPassword";
 import VerifyCode from "./pages/auth/VerifyCode";
-import Dashboard from "./pages/Dashboard/Dashboard";
+
+import {
+  default as Dashboard,
+  default as DashboardLayout,
+} from "./pages/Dashboard/Dashboard";
+import OrderList from "./pages/Dashboard/OrderList";
 
 const App = () => {
   return (
@@ -13,7 +19,17 @@ const App = () => {
       <Route path="/forgetPassword" element={<ForgetPassword />} />
       <Route path="/verifyCode" element={<VerifyCode />} />
       <Route path="/newPassword" element={<NewPassword />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+
+      <Route element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/orderList" element={<OrderList />} />
+        <Route path="/products" element={<div>Products</div>} />
+        <Route path="/users" element={<div>Users</div>} />
+        <Route path="/admins" element={<div>Admins</div>} />
+        <Route path="/categories" element={<div>Categories</div>} />
+        <Route path="/notifications" element={<div>Notifications</div>} />
+        <Route path="/reports" element={<div>Reports</div>} />
+      </Route>
     </Routes>
   );
 };
