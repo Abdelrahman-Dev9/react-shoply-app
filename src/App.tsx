@@ -12,6 +12,7 @@ import {
 import OrderList from "./pages/Dashboard/OrderList";
 import ProductsPage from "./pages/Dashboard/Products";
 import UsersPage from "./pages/Dashboard/Users";
+import AdminsPage from "./pages/Dashboard/Admins";
 
 const App = () => {
   return (
@@ -27,7 +28,7 @@ const App = () => {
         <Route path="/orderList" element={<OrderList />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/users" element={<UsersPage />} />
-        <Route path="/admins" element={<div>Admins</div>} />
+        <Route path="/admins" element={<AdminsPage />} />
         <Route path="/categories" element={<div>Categories</div>} />
         <Route path="/notifications" element={<div>Notifications</div>} />
         <Route path="/reports" element={<div>Reports</div>} />

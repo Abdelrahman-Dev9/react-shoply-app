@@ -1,5 +1,5 @@
-import { Ban, Pencil, Search, X } from "lucide-react";
 import { useState } from "react";
+import { Ban, Pencil, Search, X } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type UserStatus = "Active" | "inactive";
@@ -78,42 +78,6 @@ const USERS: User[] = [
     fullName: "Marcus James Bennett",
     birthday: "11/30/1988",
     gender: "Male",
-  },
-  {
-    id: 6,
-    name: "Olivia Turner",
-    avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-    phone: "(+966) 123 45678910",
-    email: "olivia.t@example.com",
-    completedOrders: 0,
-    status: "inactive",
-    fullName: "Olivia Grace Turner",
-    birthday: "02/17/1997",
-    gender: "Female",
-  },
-  {
-    id: 7,
-    name: "James Carter",
-    avatar: "https://randomuser.me/api/portraits/men/55.jpg",
-    phone: "(+966) 123 45678910",
-    email: "james.c@example.com",
-    completedOrders: 12,
-    status: "Active",
-    fullName: "James Robert Carter",
-    birthday: "08/04/1982",
-    gender: "Male",
-  },
-  {
-    id: 8,
-    name: "Natalie Brooks",
-    avatar: "https://randomuser.me/api/portraits/women/23.jpg",
-    phone: "(+966) 123 45678910",
-    email: "natalie.b@example.com",
-    completedOrders: 4,
-    status: "Active",
-    fullName: "Natalie Claire Brooks",
-    birthday: "12/25/1995",
-    gender: "Female",
   },
 ];
 
@@ -273,7 +237,7 @@ function Avatar({ src, name }: { src: string; name: string }) {
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────
-export default function UsersPage() {
+export default function AdminsPage() {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<User[]>(USERS);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -307,9 +271,9 @@ export default function UsersPage() {
     >
       <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ">
           <h1 className="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
-            Users ( {users.length} )
+            Admins ( {users.length} )
           </h1>
           <div className="flex items-center gap-2 border border-gray-200 rounded-[8px] px-3 py-2 bg-white flex-1 ">
             <Search size={14} className="text-gray-400 shrink-0" />
@@ -321,6 +285,9 @@ export default function UsersPage() {
               className="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400 "
             />
           </div>
+          <button className="px-3 py-2 bg-[#1e3a8a] text-[12px]  cursor-pointer text-white rounded-[8px]">
+            Add new admin
+          </button>
         </div>
 
         {/* Table */}
