@@ -10,6 +10,7 @@ import {
   default as DashboardLayout,
 } from "./pages/Dashboard/Dashboard";
 import OrderList from "./pages/Dashboard/OrderList";
+import ProductsPage from "./pages/Dashboard/Products";
 
 const App = () => {
   return (
@@ -23,7 +24,7 @@ const App = () => {
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orderList" element={<OrderList />} />
-        <Route path="/products" element={<div>Products</div>} />
+        <Route path="/products" element={<ProductsPage />} />
         <Route path="/users" element={<div>Users</div>} />
         <Route path="/admins" element={<div>Admins</div>} />
         <Route path="/categories" element={<div>Categories</div>} />

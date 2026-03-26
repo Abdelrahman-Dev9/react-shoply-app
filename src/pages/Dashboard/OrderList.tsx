@@ -153,9 +153,9 @@ const ORDERS: Order[] = [
 
 // ── Status badge ───────────────────────────────────────────────────────────
 const statusStyles: Record<Status, string> = {
-  Active: "border border-[#1e3a8a] text-[#1e3a8a]",
-  Pending: "border border-amber-400 text-amber-500",
-  Completed: "border border-green-500 text-green-600",
+  Active: "border border-[#1e3a8a] text-[#1e3a8a] p-2",
+  Pending: "border border-amber-400 text-amber-500 p-2",
+  Completed: "border border-green-500 text-green-600 p-2",
 };
 
 function StatusBadge({ status }: { status: Status }) {
