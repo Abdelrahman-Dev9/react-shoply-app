@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Ban, Pencil, Search, X } from "lucide-react";
+import { Ban, Pencil, Plus, RotateCcw, Search, X } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type UserStatus = "Active" | "inactive";
@@ -18,7 +18,7 @@ interface User {
 }
 
 // ── Mock data ──────────────────────────────────────────────────────────────
-const USERS: User[] = [
+const INITIAL_ADMINS: User[] = [
   {
     id: 1,
     name: "Darlene Robertson",
@@ -90,6 +90,145 @@ function InfoBox({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ── Add new admin modal ────────────────────────────────────────────────────
+function AddAdminModal({
+  onClose,
+  onAdd,
+}: {
+  onClose: () => void;
+  onAdd: (user: User) => void;
+}) {
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+  });
+
+  const setField = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const handleReset = () =>
+    setForm({ name: "", phone: "", email: "", password: "" });
+
+  const handleAdd = () => {
+    if (!form.name.trim()) return;
+    onAdd({
+      id: Date.now(),
+      name: form.name,
+      avatar: `https://randomuser.me/api/portraits/men/${Math.floor(
+        Math.random() * 90
+      )}.jpg`,
+      phone: form.phone || "(+966) 000 00000000",
+      email: form.email,
+      completedOrders: 0,
+      status: "Active",
+      fullName: form.name,
+      birthday: "—",
+      gender: "—",
+    });
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl p-6 relative">
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 left-4 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+        >
+          <X size={14} className="text-white" />
+        </button>
+
+        {/* Title */}
+        <h2 className="text-center text-[#1e3a8a] font-bold text-xl mb-6 underline underline-offset-4">
+          Add new admin
+        </h2>
+
+        {/* Fields */}
+        <div className="flex flex-col gap-3 mb-6">
+          {/* Admin name */}
+          <div className="border border-gray-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-gray-800">
+              <span className="font-semibold shrink-0">Admin name:</span>
+              <input
+                value={form.name}
+                onChange={setField("name")}
+                placeholder="Mostafa Mohamed"
+                className="flex-1 outline-none bg-transparent text-gray-700 placeholder-gray-400"
+              />
+            </div>
+          </div>
+
+          {/* Admin phone */}
+          <div className="border border-gray-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-gray-800">
+              <span className="font-semibold shrink-0">Admin phone:</span>
+              <input
+                value={form.phone}
+                onChange={setField("phone")}
+                placeholder="Ex: +20 12345678"
+                className="flex-1 outline-none bg-transparent text-gray-700 placeholder-gray-400"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div className="border border-gray-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-gray-800">
+              <span className="font-semibold shrink-0">Email:</span>
+              <input
+                value={form.email}
+                onChange={setField("email")}
+                placeholder="Ex: Admin@mail.com"
+                type="email"
+                className="flex-1 outline-none bg-transparent text-gray-700 placeholder-gray-400"
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="border border-gray-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2 text-sm text-gray-800">
+              <span className="font-semibold shrink-0">Password:</span>
+              <input
+                value={form.password}
+                onChange={setField("password")}
+                placeholder="············"
+                type="password"
+                className="flex-1 outline-none bg-transparent text-gray-700 placeholder-gray-400"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="flex items-center gap-2 border border-[#1e3a8a] text-[#1e3a8a] text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-[#eff3ff] transition-colors"
+          >
+            <RotateCcw size={14} />
+            Reset all
+          </button>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="bg-[#1e3a8a] text-white text-sm font-bold px-10 py-2.5 rounded-xl hover:bg-[#1e40af] transition-colors"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── User detail modal ──────────────────────────────────────────────────────
 function UserDetailModal({
   user,
@@ -121,7 +260,6 @@ function UserDetailModal({
 
         {/* Photo + right fields */}
         <div className="flex gap-4 mb-4">
-          {/* Photo */}
           <div className="w-44 shrink-0 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden flex items-center justify-center min-h-[160px]">
             <img
               src={user.avatar}
@@ -133,8 +271,6 @@ function UserDetailModal({
               }}
             />
           </div>
-
-          {/* Right fields */}
           <div className="flex-1 flex flex-col gap-3">
             <InfoBox>
               <span className="font-semibold">User phone:</span> {user.phone}
@@ -149,13 +285,11 @@ function UserDetailModal({
           </div>
         </div>
 
-        {/* Full name */}
         <InfoBox>
           <span className="font-semibold">Full Name:</span>{" "}
           <span className="text-[#1e3a8a] font-medium">{user.fullName}</span>
         </InfoBox>
 
-        {/* Email */}
         <div className="mt-3">
           <InfoBox>
             <span className="font-semibold">Email:</span>{" "}
@@ -163,7 +297,6 @@ function UserDetailModal({
           </InfoBox>
         </div>
 
-        {/* Footer buttons */}
         <div className="flex items-center justify-between mt-6">
           <button
             onClick={() => {
@@ -239,17 +372,18 @@ function Avatar({ src, name }: { src: string; name: string }) {
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function AdminsPage() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<User[]>(USERS);
+  const [admins, setAdmins] = useState<User[]>(INITIAL_ADMINS);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const filtered = users.filter(
+  const filtered = admins.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.phone.includes(search)
   );
 
   const toggleStatus = (id: number) => {
-    setUsers((prev) =>
+    setAdmins((prev) =>
       prev.map((u) =>
         u.id === id
           ? { ...u, status: u.status === "Active" ? "inactive" : "Active" }
@@ -259,9 +393,13 @@ export default function AdminsPage() {
   };
 
   const blockUser = (id: number) => {
-    setUsers((prev) =>
+    setAdmins((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: "inactive" } : u))
     );
+  };
+
+  const addAdmin = (user: User) => {
+    setAdmins((prev) => [...prev, user]);
   };
 
   return (
@@ -271,21 +409,25 @@ export default function AdminsPage() {
     >
       <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 ">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <h1 className="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
-            Admins ( {users.length} )
+            Admins ( {admins.length} )
           </h1>
-          <div className="flex items-center gap-2 border border-gray-200 rounded-[8px] px-3 py-2 bg-white flex-1 ">
+          <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white flex-1">
             <Search size={14} className="text-gray-400 shrink-0" />
             <input
               type="text"
               placeholder="Search for name or phone"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400 "
+              className="flex-1 text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400"
             />
           </div>
-          <button className="px-3 py-2 bg-[#1e3a8a] text-[12px]  cursor-pointer text-white rounded-[8px]">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#1e3a8a] text-white text-sm font-semibold rounded-lg hover:bg-[#1e40af] transition-colors whitespace-nowrap"
+          >
+            <Plus size={15} />
             Add new admin
           </button>
         </div>
@@ -308,7 +450,7 @@ export default function AdminsPage() {
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center text-gray-400 py-10">
-                    No users found
+                    No admins found
                   </td>
                 </tr>
               ) : (
@@ -324,7 +466,6 @@ export default function AdminsPage() {
                       onClick={() => setSelectedUser(user)}
                       className="hover:bg-[#f5f7ff] transition-colors cursor-pointer"
                     >
-                      {/* Name + avatar */}
                       <td className="py-4">
                         <div className="flex items-center gap-3">
                           <Avatar src={user.avatar} name={user.name} />
@@ -333,21 +474,13 @@ export default function AdminsPage() {
                           </span>
                         </div>
                       </td>
-
-                      {/* Phone */}
                       <td className="py-4 text-gray-600">{user.phone}</td>
-
-                      {/* Email */}
                       <td className="py-4 text-gray-600">{user.email}</td>
-
-                      {/* Completed orders */}
                       <td className="py-4 text-gray-600">
                         {user.completedOrders === 1
                           ? "1 order"
                           : `${user.completedOrders} orders`}
                       </td>
-
-                      {/* Status — stopPropagation so badge click doesn't open modal */}
                       <td className="py-4">
                         <StatusBadge
                           status={user.status}
@@ -372,6 +505,14 @@ export default function AdminsPage() {
           user={selectedUser}
           onClose={() => setSelectedUser(null)}
           onBlock={blockUser}
+        />
+      )}
+
+      {/* Add new admin modal */}
+      {showAddModal && (
+        <AddAdminModal
+          onClose={() => setShowAddModal(false)}
+          onAdd={addAdmin}
         />
       )}
     </div>
