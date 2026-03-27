@@ -14,6 +14,7 @@ import ProductsPage from "./pages/Dashboard/Products";
 import UsersPage from "./pages/Dashboard/Users";
 import AdminsPage from "./pages/Dashboard/Admins";
 import CategoryPage from "./pages/Dashboard/Category";
+import NotificationsPage from "./pages/Dashboard/Notification";
 
 const App = () => {
   return (
@@ -31,7 +32,7 @@ const App = () => {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/admins" element={<AdminsPage />} />
         <Route path="/categories" element={<CategoryPage />} />
-        <Route path="/notifications" element={<div>Notifications</div>} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/reports" element={<div>Reports</div>} />
       </Route>
     </Routes>
