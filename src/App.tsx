@@ -16,6 +16,7 @@ import AdminsPage from "./pages/Dashboard/Admins";
 import CategoryPage from "./pages/Dashboard/Category";
 import NotificationsPage from "./pages/Dashboard/Notification";
 import ReportsPage from "./pages/Dashboard/Report";
+import ProfileAdmin from "./pages/Dashboard/Profile";
 
 const App = () => {
   return (
@@ -35,6 +36,7 @@ const App = () => {
         <Route path="/categories" element={<CategoryPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/profile" element={<ProfileAdmin />} />
       </Route>
     </Routes>
   );

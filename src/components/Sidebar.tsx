@@ -87,7 +87,10 @@ const Sidebar = ({
         </button>
 
         {!sidebarCollapsed && (
-          <div className="flex items-center gap-3 mt-3 px-3">
+          <div
+            className="flex items-center gap-3 mt-3 px-3 cursor-pointer"
+            onClick={() => navigate("/profile")}
+          >
             <div className="w-8 h-8 rounded-full bg-[#1e3a8a] flex items-center justify-center">
               <ShieldCheck size={14} className="text-white" />
             </div>
