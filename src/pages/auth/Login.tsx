@@ -5,112 +5,110 @@ import { CiLock, CiMail } from "react-icons/ci";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+
 import LoginImage from "../../assets/login-image.png";
 import logo from "../../assets/logo.png";
+
+import { useLoginMutation } from "@/redux/services/authApi";
 
 const loginSchema = z.object({
   email: z
     .string()
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
+
   password: z
     .string()
     .min(1, "Password is required")
     .min(8, "Password must be at least 8 characters"),
+
   rememberMe: z.boolean().optional(),
 });
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+  const [login, { isLoading }] = useLoginMutation();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
+    formState: { errors },
+  } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", rememberMe: false },
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: LoginFormData) => {
     try {
+      const res = await login({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
+
+      console.log("Login success:", res);
       navigate("/dashboard");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("Login error:", error);
+      alert(error?.data?.message || "Login failed");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row font-sans">
-      {/* Left Panel */}
-
-      {/* Left Panel */}
+      {/* Left Image */}
       <img
         src={LoginImage}
         alt="Login"
-        className="hidden sm:hidden lg:block w-[50%]"
+        className="hidden lg:block w-[50%] object-cover"
       />
 
-      {/* Right Panel - Login Form */}
+      {/* Right Side */}
       <div className="flex-1 flex flex-col min-h-screen bg-white">
         {/* Logo */}
-        <div className="px-8 pt-8 pb-2">
-          <div className="flex items-center gap-1.5">
-            {/* Priceo logo icon */}
-
-            <img src={logo} alt="logo" />
-          </div>
+        <div className="px-8 pt-8">
+          <img src={logo} alt="logo" />
         </div>
 
-        {/* Form Container */}
-        <div className="flex-1 flex items-center justify-center px-6 py-10 mt-[-140px]">
+        {/* Form */}
+        <div className="flex-1 flex items-center justify-center px-6">
           <div className="w-full max-w-md">
-            {/* Heading */}
-            <div className=" ml-18 mb-18">
-              <h1 className="text-[32px]  text-[#1e3a6e] mb-2 tracking-tight ml-7 font-bold">
+            <div className="text-center mb-12">
+              <h1 className="text-[32px] font-bold text-[#1e3a6e]">
                 Welcome Back
               </h1>
-              <p className="text-gray-500 text-[14px] font-semibold">
-                Log in to Manage Administrative Tasks
+              <p className="text-gray-500 text-sm mt-2">
+                Log in to manage administrative tasks
               </p>
             </div>
 
-            {/* Form */}
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-              className="space-y-6"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Email */}
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-[14px] font-semibold text-gray-700 mb-2"
-                >
+                <label className="text-sm font-semibold text-gray-700">
                   Email
                 </label>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                    <CiMail size={20} />
-                  </span>
+                <div className="relative mt-2">
+                  <CiMail className="absolute left-3 top-3.5 text-gray-400" />
 
                   <input
-                    id="email"
                     type="email"
-                    placeholder="Email"
+                    placeholder="Enter email"
                     {...register("email")}
-                    className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
-                      errors.email
-                        ? "border-red-400 focus:ring-red-300"
-                        : "border-gray-200 focus:ring-[#1e3a6e]"
-                    }`}
+                    className="w-full pl-10 py-3 bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
                   />
                 </div>
 
                 {errors.email && (
-                  <p className="mt-1.5 text-xs text-red-500">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.email.message}
                   </p>
                 )}
@@ -118,34 +116,24 @@ const Login = () => {
 
               {/* Password */}
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-[14px] font-semibold text-gray-700 mb-2"
-                >
+                <label className="text-sm font-semibold text-gray-700">
                   Password
                 </label>
 
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                    <CiLock size={20} />
-                  </span>
+                <div className="relative mt-2">
+                  <CiLock className="absolute left-3 top-3.5 text-gray-400" />
 
                   <input
-                    id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Password"
+                    placeholder="Enter password"
                     {...register("password")}
-                    className={`w-full pl-11 pr-12 py-3.5 bg-gray-50 border rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
-                      errors.password
-                        ? "border-red-400 focus:ring-red-300"
-                        : "border-gray-200 focus:ring-[#1e3a6e]"
-                    }`}
+                    className="w-full pl-10 pr-10 py-3 bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
                   />
 
                   <button
                     type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3.5 text-gray-500"
                   >
                     {showPassword ? (
                       <IoEyeOutline size={20} />
@@ -156,29 +144,23 @@ const Login = () => {
                 </div>
 
                 {errors.password && (
-                  <p className="mt-1.5 text-xs text-red-500">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
-              {/* Remember me + Forgot password */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    {...register("rememberMe")}
-                    className="w-4 h-4 rounded border-gray-300 accent-[#1e3a6e]"
-                  />
-                  <span className="text-sm font-semibold text-gray-700">
-                    Remember me
-                  </span>
+              {/* Remember + Forgot */}
+              <div className="flex justify-between items-center">
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" {...register("rememberMe")} />
+                  Remember me
                 </label>
 
                 <button
                   type="button"
                   onClick={() => navigate("/forgetPassword")}
-                  className="text-sm font-semibold text-[#1e3a6e] hover:underline"
+                  className="text-sm text-[#1e3a6e] hover:underline"
                 >
                   Forgot password?
                 </button>
@@ -187,29 +169,22 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 bg-[#1e3a6e] hover:bg-[#162e5a] disabled:opacity-70 text-white font-semibold text-[16px] rounded-xl shadow-md flex items-center justify-center"
+                disabled={isLoading}
+                className="w-full bg-[#1e3a6e] text-white py-3 rounded-xl font-semibold disabled:opacity-60"
               >
-                {isSubmitting ? "Loading..." : "Log in"}
+                {isLoading ? "Loading..." : "Login"}
               </button>
             </form>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center pb-8 px-4 ">
-          <p className="text-sm font-bold text-gray-700">
-            Created By Priceo Team
-          </p>
-          <a
-            href="#"
-            className="text-sm text-[#1e3a6e] hover:underline underline-offset-2 font-medium"
-          >
-            Contact us
-          </a>
+        <div className="text-center pb-6 text-sm text-gray-600">
+          Created By Priceo Team
         </div>
       </div>
     </div>
   );
 };
+
 export default Login;
