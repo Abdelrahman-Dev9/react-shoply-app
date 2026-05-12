@@ -2,6 +2,7 @@ import { ChevronLeft, LogOut, ShieldCheck } from "lucide-react";
 import logo from "../assets/logo.png";
 import { navItems } from "@/constant/constant";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useGetProfileQuery } from "@/redux/services/authApi";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -18,6 +19,7 @@ const Sidebar = ({
 }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data, isLoading } = useGetProfileQuery(undefined);
 
   const activeNav = location.pathname.replace("/", "");
 
@@ -92,12 +94,24 @@ const Sidebar = ({
             onClick={() => navigate("/profile")}
           >
             <div className="w-8 h-8 rounded-full bg-[#1e3a8a] flex items-center justify-center">
-              <ShieldCheck size={14} className="text-white" />
+              {data?.admin?.profileImage ? (
+                <img
+                  src={data.admin.profileImage}
+                  alt="profile"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                  <ShieldCheck size={14} className="text-white" />
+                </div>
+              )}
             </div>
+
             <div>
               <p className="text-xs text-gray-400">Welcome back 👋</p>
+
               <p className="text-sm font-semibold text-gray-700">
-                Ahmed Mohamed
+                {isLoading ? "Loading..." : data?.admin?.name}
               </p>
             </div>
           </div>
