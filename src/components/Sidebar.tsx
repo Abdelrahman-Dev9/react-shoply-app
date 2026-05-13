@@ -1,4 +1,5 @@
 import {
+  useGetAdminsQuery,
   useGetCategoriesQuery,
   useGetProfileQuery,
 } from "@/redux/services/authApi";
@@ -38,6 +39,8 @@ const Sidebar = ({
   const { data: categories } = useGetCategoriesQuery({
     page: 1,
   });
+  const { data: admins } = useGetAdminsQuery({});
+  // console.log(admins.allAdmins.length);
 
   const activeNav = location.pathname.replace("/", "");
 
@@ -51,7 +54,12 @@ const Sidebar = ({
     { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
     { icon: Package, label: "Products", path: "products", badge: 5 },
     { icon: Users, label: "Users", path: "users", badge: 45 },
-    { icon: ShieldCheck, label: "Admins", path: "admins", badge: 10 },
+    {
+      icon: ShieldCheck,
+      label: "Admins",
+      path: "admins",
+      badge: admins?.allAdmins.length || 0,
+    },
     {
       icon: Tag,
       label: "Categories",
