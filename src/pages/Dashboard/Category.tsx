@@ -1,9 +1,17 @@
+import CategoryDetails from "@/components/ui/CategoryDetails";
 import {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
 } from "@/redux/services/authApi";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
+
+type Category = {
+  _id: string;
+  name: string;
+  image: string;
+};
+
 const CategoryPage = () => {
   const [open, setOpen] = useState(false);
 
@@ -13,6 +21,9 @@ const CategoryPage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
   const { data, isLoading } = useGetCategoriesQuery({
     keyword: search,
     page,
@@ -23,15 +34,23 @@ const CategoryPage = () => {
   const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
 
   const handleCreate = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    if (image) formData.append("image", image);
+    try {
+      const formData = new FormData();
 
-    await createCategory(formData).unwrap();
+      formData.append("name", name);
 
-    setName("");
-    setImage(null);
-    setOpen(false);
+      if (image) {
+        formData.append("image", image);
+      }
+
+      await createCategory(formData).unwrap();
+
+      setName("");
+      setImage(null);
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const pagination = data?.paginationResult;
@@ -46,17 +65,19 @@ const CategoryPage = () => {
           {/* SEARCH */}
           <div className="flex items-center gap-2 border rounded-xl px-3 py-2 flex-1">
             <Search size={14} />
+
             <input
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
-                setPage(1); // reset page on search
+                setPage(1);
               }}
               placeholder="Search category"
               className="flex-1 outline-none text-sm"
             />
           </div>
 
+          {/* ADD BUTTON */}
           <button
             onClick={() => setOpen(true)}
             className="bg-blue-900 text-white px-3 py-2 rounded-xl flex items-center gap-2"
@@ -75,14 +96,20 @@ const CategoryPage = () => {
                   <td className="p-4">Loading...</td>
                 </tr>
               ) : (
-                data?.data?.map((cat: any) => (
-                  <tr key={cat._id} className="border-t">
+                data?.data?.map((cat: Category) => (
+                  <tr
+                    key={cat._id}
+                    onClick={() => setSelectedCategory(cat)}
+                    className="border-t cursor-pointer hover:bg-gray-50 transition"
+                  >
                     <td className="p-3">
                       <img
                         src={cat.image}
+                        alt={cat.name}
                         className="w-[80px] h-[80px] object-contain"
                       />
                     </td>
+
                     <td className="p-3 font-medium">{cat.name}</td>
                   </tr>
                 ))
@@ -115,9 +142,9 @@ const CategoryPage = () => {
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* ADD CATEGORY MODAL */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-5 rounded-xl w-[400px]">
             <h2 className="text-lg font-bold mb-3">Add Category</h2>
 
@@ -151,6 +178,14 @@ const CategoryPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* CATEGORY DETAILS MODAL */}
+      {selectedCategory && (
+        <CategoryDetails
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
       )}
     </div>
   );
