@@ -2,6 +2,7 @@ import {
   useGetAdminsQuery,
   useGetCategoriesQuery,
   useGetProfileQuery,
+  useGetUsersQuery,
 } from "@/redux/services/authApi";
 import {
   BarChart2,
@@ -40,7 +41,9 @@ const Sidebar = ({
     page: 1,
   });
   const { data: admins } = useGetAdminsQuery({});
-  // console.log(admins.allAdmins.length);
+  const { data: users } = useGetUsersQuery({});
+
+  // console.log(users.usercount);
 
   const activeNav = location.pathname.replace("/", "");
 
@@ -53,7 +56,12 @@ const Sidebar = ({
     },
     { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
     { icon: Package, label: "Products", path: "products", badge: 5 },
-    { icon: Users, label: "Users", path: "users", badge: 45 },
+    {
+      icon: Users,
+      label: "Users",
+      path: "users",
+      badge: users?.usercount || 0,
+    },
     {
       icon: ShieldCheck,
       label: "Admins",

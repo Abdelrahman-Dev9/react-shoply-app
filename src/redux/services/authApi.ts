@@ -77,6 +77,15 @@ export const authApi = baseApi.injectEndpoints({
 
       invalidatesTags: ["Admins"],
     }),
+    getUsers: builder.query({
+      query: () => ({
+        url: "/admin/user",
+        method: "GET",
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+    }),
   }),
 });
 
@@ -88,4 +97,5 @@ export const {
   useGetCategoriesQuery,
   useGetAdminsQuery,
   useCreateAdminMutation,
+  useGetUsersQuery,
 } = authApi;
