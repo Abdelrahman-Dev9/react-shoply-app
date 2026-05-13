@@ -1,8 +1,21 @@
-import { ChevronLeft, LogOut, ShieldCheck } from "lucide-react";
+import {
+  useGetCategoriesQuery,
+  useGetProfileQuery,
+} from "@/redux/services/authApi";
+import {
+  BarChart2,
+  Bell,
+  ChevronLeft,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  Package,
+  ShieldCheck,
+  Tag,
+  Users,
+} from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { navItems } from "@/constant/constant";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useGetProfileQuery } from "@/redux/services/authApi";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -19,9 +32,35 @@ const Sidebar = ({
 }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const { data, isLoading } = useGetProfileQuery(undefined);
 
+  const { data: categories } = useGetCategoriesQuery({
+    page: 1,
+  });
+
   const activeNav = location.pathname.replace("/", "");
+
+  const navItems = [
+    {
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      path: "dashboard",
+      badge: null,
+    },
+    { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
+    { icon: Package, label: "Products", path: "products", badge: 5 },
+    { icon: Users, label: "Users", path: "users", badge: 45 },
+    { icon: ShieldCheck, label: "Admins", path: "admins", badge: 10 },
+    {
+      icon: Tag,
+      label: "Categories",
+      path: "categories",
+      badge: categories?.results || 0,
+    },
+    { icon: Bell, label: "Notifications", path: "notifications", badge: 3 },
+    { icon: BarChart2, label: "Reports", path: "reports", badge: null },
+  ];
 
   return (
     <aside
@@ -64,7 +103,8 @@ const Sidebar = ({
             {!sidebarCollapsed && (
               <>
                 <span className="flex-1 text-left">{label}</span>
-                {badge && (
+
+                {badge !== null && (
                   <span
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                       activeNav === path
