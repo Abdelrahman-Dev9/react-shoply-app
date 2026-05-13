@@ -19,3 +19,15 @@ export const navItems = [
   { icon: Bell, label: "Notifications", path: "notifications", badge: 3 },
   { icon: BarChart2, label: "Reports", path: "reports", badge: null },
 ];
+
+export const infoFields = [
+  { label: "Name", key: "name", placeholder: "Ahmed Mohamed" },
+  { label: "Email", key: "email", placeholder: "ahmedmohamed@gmail.com" },
+  { label: "Phone", key: "phone", placeholder: "0102467112" },
+] as const;
+
+export const passwordFields = [
+  { label: "Current password", key: "current" },
+  { label: "New Password", key: "newPass" },
+  { label: "Confirm new password", key: "confirm" },
+] as const;
