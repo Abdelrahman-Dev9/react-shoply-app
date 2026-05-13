@@ -1,5 +1,10 @@
-import { useGetAdminsQuery } from "@/redux/services/authApi";
+import {
+  useCreateAdminMutation,
+  useGetAdminsQuery,
+} from "@/redux/services/authApi";
+
 import { Ban, Loader2, Pencil, Plus, X } from "lucide-react";
+
 import { useMemo, useState } from "react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -60,8 +65,26 @@ function StatusBadge({ status }: { status: UserStatus }) {
   );
 }
 
-// ── Add Modal (unchanged logic) ────────────────────────────────────────────
+// ── Add Admin Modal (FIXED) ───────────────────────────────────────────────
 function AddAdminModal({ onClose }: { onClose: () => void }) {
+  const [createAdmin, { isLoading }] = useCreateAdminMutation();
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = async () => {
+    try {
+      await createAdmin(form).unwrap(); // ✅ API CALL
+      onClose(); // close modal after success
+    } catch (err) {
+      console.log("Create admin error:", err);
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/30 flex items-center justify-center"
@@ -74,6 +97,39 @@ function AddAdminModal({ onClose }: { onClose: () => void }) {
             <X />
           </button>
         </div>
+
+        <input
+          className="border p-2 w-full mt-3"
+          placeholder="Name"
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+
+        <input
+          className="border p-2 w-full mt-3"
+          placeholder="Phone"
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+
+        <input
+          className="border p-2 w-full mt-3"
+          placeholder="Email"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+
+        <input
+          className="border p-2 w-full mt-3"
+          placeholder="Password"
+          type="password"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
+
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading}
+          className="bg-blue-900 text-white w-full mt-4 p-2 rounded"
+        >
+          {isLoading ? "Adding..." : "Add Admin"}
+        </button>
       </div>
     </div>
   );

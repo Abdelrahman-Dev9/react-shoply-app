@@ -63,6 +63,19 @@ export const authApi = baseApi.injectEndpoints({
           Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
         },
       }),
+      providesTags: ["Admins"],
+    }),
+    createAdmin: builder.mutation({
+      query: (body) => ({
+        url: "/admin/addAdmin",
+        method: "POST",
+        body,
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+
+      invalidatesTags: ["Admins"],
     }),
   }),
 });
@@ -74,4 +87,5 @@ export const {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
   useGetAdminsQuery,
+  useCreateAdminMutation,
 } = authApi;
