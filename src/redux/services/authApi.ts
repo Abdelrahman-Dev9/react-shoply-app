@@ -86,6 +86,14 @@ export const authApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    getProducts: builder.query({
+      query: (params) => ({
+        url: "/product",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Products"],
+    }),
   }),
 });
 
@@ -98,4 +106,5 @@ export const {
   useGetAdminsQuery,
   useCreateAdminMutation,
   useGetUsersQuery,
+  useGetProductsQuery,
 } = authApi;

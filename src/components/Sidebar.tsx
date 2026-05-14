@@ -1,6 +1,7 @@
 import {
   useGetAdminsQuery,
   useGetCategoriesQuery,
+  useGetProductsQuery,
   useGetProfileQuery,
   useGetUsersQuery,
 } from "@/redux/services/authApi";
@@ -42,6 +43,7 @@ const Sidebar = ({
   });
   const { data: admins } = useGetAdminsQuery({});
   const { data: users } = useGetUsersQuery({});
+  const { data: products } = useGetProductsQuery({});
 
   // console.log(users.usercount);
 
@@ -55,7 +57,12 @@ const Sidebar = ({
       badge: null,
     },
     { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
-    { icon: Package, label: "Products", path: "products", badge: 5 },
+    {
+      icon: Package,
+      label: "Products",
+      path: "products",
+      badge: products?.results || 0,
+    },
     {
       icon: Users,
       label: "Users",
