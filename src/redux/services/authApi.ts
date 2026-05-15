@@ -88,6 +88,17 @@ export const authApi = baseApi.injectEndpoints({
 
       invalidatesTags: ["Admins"],
     }),
+    editAdmin: builder.mutation({
+      query: ({ id, data }: { id: string; data: FormData }) => ({
+        url: `/admin/editAdmin/${id}`,
+        method: "PUT",
+        body: data,
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+      invalidatesTags: ["Admins"],
+    }),
     getUsers: builder.query({
       query: () => ({
         url: "/admin/user",
@@ -117,6 +128,7 @@ export const {
   useGetAdminsQuery,
   useCreateAdminMutation,
   useDeleteAdminMutation,
+  useEditAdminMutation,
   useGetUsersQuery,
   useGetProductsQuery,
 } = authApi;

@@ -11,10 +11,8 @@ const AdminsPage = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<Admin | null>(null);
 
-  // RTK Query
   const { data, isLoading, error } = useGetAdminsQuery({});
 
-  // Safe Data
   const admins: Admin[] = useMemo(() => {
     return (
       data?.allAdmins?.map((admin: Admin) => ({
@@ -24,28 +22,25 @@ const AdminsPage = () => {
     );
   }, [data]);
 
-  // Filtered Data
   const filteredAdmins = useMemo(() => {
     return admins.filter(
       (admin) =>
         admin.name.toLowerCase().includes(search.toLowerCase()) ||
-        admin.phone.includes(search) ||
-        admin.email.toLowerCase().includes(search.toLowerCase())
+        admin.email.toLowerCase().includes(search.toLowerCase()) ||
+        admin.phone.includes(search)
     );
   }, [admins, search]);
 
-  // Error State
   if (error) {
     return <div className="p-6 text-red-500">Failed to load admins</div>;
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="bg-white p-6 rounded-xl shadow-sm">
-        {/* Header */}
-
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <h1 className="font-bold text-2xl">Admins ({admins.length})</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="rounded-2xl bg-white p-6 shadow-sm">
+        {/* HEADER */}
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="text-2xl font-bold">Admins ({admins.length})</h1>
 
           <Input
             placeholder="Search admins..."
@@ -54,83 +49,78 @@ const AdminsPage = () => {
             className="max-w-sm"
           />
 
-          <button className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+          <button className="flex items-center gap-2 rounded-lg bg-blue-900 px-4 py-2 text-white transition hover:bg-blue-800">
             <Plus size={16} />
-            Add
+            Add Admin
           </button>
         </div>
 
-        {/* Loading */}
-
+        {/* LOADING */}
         {isLoading ? (
-          <div className="flex items-center justify-center gap-2 py-16">
+          <div className="flex items-center justify-center gap-2 py-20">
             <Loader2 className="animate-spin" />
             <span>Loading admins...</span>
           </div>
+        ) : filteredAdmins.length === 0 ? (
+          <div className="py-20 text-center text-gray-500">No admins found</div>
         ) : (
-          <table className="w-full">
-            <tbody>
-              {filteredAdmins.map((admin) => (
-                <tr
-                  key={admin._id}
-                  onClick={() => {
-                    setSelectedUser(admin);
-                  }}
-                  className="border-t cursor-pointer hover:bg-gray-50 transition"
-                >
-                  {/* User */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <tbody>
+                {filteredAdmins.map((admin) => (
+                  <tr
+                    key={admin._id}
+                    onClick={() => setSelectedUser(admin)}
+                    className="cursor-pointer border-t transition hover:bg-gray-50"
+                  >
+                    {/* USER */}
+                    <td className="flex items-center gap-3 p-4">
+                      <Avatar>
+                        <AvatarImage src={admin.profileImage} />
 
-                  <td className="p-4 flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={admin.profileImage} />
+                        <AvatarFallback>
+                          {admin.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
 
-                      <AvatarFallback>
-                        {admin.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                      <span className="font-medium">{admin.name}</span>
+                    </td>
 
-                    <span className="font-medium">{admin.name}</span>
-                  </td>
+                    {/* PHONE */}
+                    <td>{admin.phone}</td>
 
-                  {/* Phone */}
+                    {/* EMAIL */}
+                    <td>{admin.email}</td>
 
-                  <td>{admin.phone}</td>
+                    {/* ROLE */}
+                    <td>Admin</td>
 
-                  {/* Email */}
-
-                  <td>{admin.email}</td>
-
-                  {/* Role */}
-
-                  <td>Admin</td>
-
-                  {/* Status */}
-
-                  <td>
-                    <Badge
-                      className={`hover:bg-transparent ${
-                        admin.status === "Active"
-                          ? "bg-green-100 text-green-700 border-green-200"
-                          : "bg-red-100 text-red-700 border-red-200"
-                      }`}
-                    >
-                      {admin.status || "Active"}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    {/* STATUS */}
+                    <td>
+                      <Badge
+                        className={`hover:bg-transparent ${
+                          admin.status === "Active"
+                            ? "border-green-200 bg-green-100 text-green-700"
+                            : "border-red-200 bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {admin.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* Modal */}
-
+      {/* MODAL */}
       {selectedUser && (
         <UserDetailModal
           user={selectedUser}
