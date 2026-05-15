@@ -1,72 +1,18 @@
+import type { Admin } from "@/components/admins/adminsDetails";
+import UserDetailModal from "@/components/admins/adminsDetails";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useGetAdminsQuery } from "@/redux/services/authApi";
-import { Ban, Loader2, Pencil, Plus, X } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-
-type UserStatus = "Active" | "inactive";
-
-interface Admin {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  profileImage?: string;
-  status?: UserStatus;
-}
-
-function UserDetailModal({
-  user,
-  onClose,
-}: {
-  user: Admin;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="bg-white p-6 rounded-xl w-[500px] shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">{user.name}</h2>
-
-          <button onClick={onClose}>
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          <Input value={user.email} readOnly />
-
-          <Input value={user.phone} readOnly />
-        </div>
-
-        <div className="flex gap-4 mt-6">
-          <button className="text-red-500 flex gap-1 items-center text-sm font-medium">
-            <Ban size={14} />
-            Block
-          </button>
-
-          <button className="text-blue-600 flex gap-1 items-center text-sm font-medium">
-            <Pencil size={14} />
-            Edit
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 const AdminsPage = () => {
   const [search, setSearch] = useState("");
-
   const [selectedUser, setSelectedUser] = useState<Admin | null>(null);
 
   // RTK Query
   const { data, isLoading, error } = useGetAdminsQuery({});
-  console.log(data);
 
   // Safe Data
   const admins: Admin[] = useMemo(() => {
