@@ -77,6 +77,17 @@ export const authApi = baseApi.injectEndpoints({
 
       invalidatesTags: ["Admins"],
     }),
+    deleteAdmin: builder.mutation({
+      query: (id: string) => ({
+        url: `/admin/deleteAdmin/${id}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+
+      invalidatesTags: ["Admins"],
+    }),
     getUsers: builder.query({
       query: () => ({
         url: "/admin/user",
@@ -105,6 +116,7 @@ export const {
   useGetCategoriesQuery,
   useGetAdminsQuery,
   useCreateAdminMutation,
+  useDeleteAdminMutation,
   useGetUsersQuery,
   useGetProductsQuery,
 } = authApi;

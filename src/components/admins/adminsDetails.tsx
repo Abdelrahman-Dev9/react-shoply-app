@@ -1,5 +1,6 @@
 import { X, Ban, Pencil } from "lucide-react";
 import { Input } from "../ui/input";
+import { useDeleteAdminMutation } from "@/redux/services/authApi";
 
 export type UserStatus = "Active" | "inactive";
 
@@ -19,13 +20,16 @@ const UserDetailModal = ({
   user: Admin;
   onClose: () => void;
 }) => {
+  const [deleteAdmin, { isLoading }] = useDeleteAdminMutation();
+
   const handleDelete = async () => {
-    // try {
-    //   await deleteAdmin(user._id).unwrap();
-    //   onClose();
-    // } catch (err) {
-    //   console.error("Failed to delete admin", err);
-    // }
+    try {
+      const res = await deleteAdmin(user._id).unwrap();
+      console.log("Deleted:", res.message);
+      onClose(); // close modal after delete
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
   return (
@@ -50,11 +54,11 @@ const UserDetailModal = ({
         <div className="flex gap-4 mt-6">
           <button
             onClick={handleDelete}
-            // disabled={isLoading}
-            className="text-red-500 flex gap-1 items-center text-sm font-medium"
+            disabled={isLoading}
+            className="text-red-500 flex gap-1 items-center text-sm font-medium disabled:opacity-50"
           >
             <Ban size={14} />
-            {/* {isLoading ? "Deleting..." : "Delete"} */}
+            {isLoading ? "Deleting..." : "Delete"}
           </button>
 
           <button className="text-blue-600 flex gap-1 items-center text-sm font-medium">
