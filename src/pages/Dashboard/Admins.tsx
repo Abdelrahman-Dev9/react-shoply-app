@@ -1,13 +1,9 @@
-import {
-  useCreateAdminMutation,
-  useGetAdminsQuery,
-} from "@/redux/services/authApi";
-
-import { Ban, Loader2, Pencil, Plus, X } from "lucide-react";
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useGetAdminsQuery } from "@/redux/services/authApi";
+import { Ban, Loader2, Pencil, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-
-// ── Types ──────────────────────────────────────────────────────────────────
 type UserStatus = "Active" | "inactive";
 
 interface Admin {
@@ -19,123 +15,6 @@ interface Admin {
   status?: UserStatus;
 }
 
-// ── Info box ───────────────────────────────────────────────────────────────
-function InfoBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800">
-      {children}
-    </div>
-  );
-}
-
-// ── Avatar ─────────────────────────────────────────────────────────────────
-function Avatar({ src, name }: { src?: string; name: string }) {
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
-  return (
-    <div className="w-10 h-10 rounded-full overflow-hidden bg-[#dbeafe] flex items-center justify-center">
-      {src ? (
-        <img src={src} className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-xs font-bold text-[#1e3a8a]">{initials}</span>
-      )}
-    </div>
-  );
-}
-
-// ── Status Badge ───────────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: UserStatus }) {
-  const isActive = status === "Active";
-
-  return (
-    <div
-      className={`text-xs px-3 py-1 rounded-full border w-fit ${
-        isActive
-          ? "border-green-500 text-green-600 bg-green-50"
-          : "border-red-400 text-red-500 bg-red-50"
-      }`}
-    >
-      {status}
-    </div>
-  );
-}
-
-// ── Add Admin Modal (FIXED) ───────────────────────────────────────────────
-function AddAdminModal({ onClose }: { onClose: () => void }) {
-  const [createAdmin, { isLoading }] = useCreateAdminMutation();
-
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-
-  const handleSubmit = async () => {
-    try {
-      await createAdmin(form).unwrap(); // ✅ API CALL
-      onClose(); // close modal after success
-    } catch (err) {
-      console.log("Create admin error:", err);
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/30 flex items-center justify-center"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="bg-white p-6 rounded-xl w-[400px]">
-        <div className="flex justify-between">
-          <h2 className="font-bold">Add Admin</h2>
-          <button onClick={onClose}>
-            <X />
-          </button>
-        </div>
-
-        <input
-          className="border p-2 w-full mt-3"
-          placeholder="Name"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-
-        <input
-          className="border p-2 w-full mt-3"
-          placeholder="Phone"
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        />
-
-        <input
-          className="border p-2 w-full mt-3"
-          placeholder="Email"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-
-        <input
-          className="border p-2 w-full mt-3"
-          placeholder="Password"
-          type="password"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className="bg-blue-900 text-white w-full mt-4 p-2 rounded"
-        >
-          {isLoading ? "Adding..." : "Add Admin"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ── User Modal ─────────────────────────────────────────────────────────────
 function UserDetailModal({
   user,
   onClose,
@@ -151,8 +30,8 @@ function UserDetailModal({
       <div className="bg-white p-6 rounded-xl w-[500px]">
         <h2 className="text-xl font-bold mb-4">{user.name}</h2>
 
-        <InfoBox>{user.email}</InfoBox>
-        <InfoBox>{user.phone}</InfoBox>
+        <Input value={user.email} readOnly />
+        <Input value={user.phone} readOnly />
 
         <div className="flex gap-2 mt-4">
           <button className="text-red-500 flex gap-1 items-center">
@@ -167,11 +46,9 @@ function UserDetailModal({
   );
 }
 
-// ── MAIN PAGE ──────────────────────────────────────────────────────────────
 const AdminsPage = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<Admin | null>(null);
-  const [showAdd, setShowAdd] = useState(false);
 
   // ✅ RTK QUERY
   const { data, isLoading, error } = useGetAdminsQuery({});
@@ -215,7 +92,7 @@ const AdminsPage = () => {
           />
 
           <button
-            onClick={() => setShowAdd(true)}
+            // onClick={() => setShowAdd(true)}
             className="bg-blue-900 text-white px-4 py-2 rounded-lg flex gap-2"
           >
             <Plus size={16} /> Add
@@ -238,7 +115,11 @@ const AdminsPage = () => {
                   className="border-t cursor-pointer hover:bg-gray-50"
                 >
                   <td className="p-3 flex items-center gap-3">
-                    <Avatar src={admin.profileImage} name={admin.name} />
+                    {/* <Avatar src={admin.profileImage} name={admin.name} /> */}
+                    <Avatar>
+                      <AvatarImage src={admin.profileImage} />
+                      <AvatarFallback>{admin.name}</AvatarFallback>
+                    </Avatar>
                     {admin.name}
                   </td>
 
@@ -246,7 +127,18 @@ const AdminsPage = () => {
                   <td>{admin.email}</td>
                   <td>Admin</td>
                   <td>
-                    <StatusBadge status={admin.status || "Active"} />
+                    {/* <StatusBadge status={admin.status || "Active"} /> */}
+                    <td>
+                      <Badge
+                        className={`hover:bg-transparent ${
+                          admin.status === "Active"
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : "bg-red-100 text-red-700 border-red-200"
+                        }`}
+                      >
+                        {admin.status || "Active"}
+                      </Badge>
+                    </td>
                   </td>
                 </tr>
               ))}
@@ -262,8 +154,6 @@ const AdminsPage = () => {
           onClose={() => setSelectedUser(null)}
         />
       )}
-
-      {showAdd && <AddAdminModal onClose={() => setShowAdd(false)} />}
     </div>
   );
 };

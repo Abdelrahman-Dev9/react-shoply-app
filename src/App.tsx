@@ -2,19 +2,22 @@ import { Route, Routes } from "react-router-dom";
 
 import DashboardHome from "./pages/Dashboard/DashboardHome";
 
-import ProductsPage from "./pages/Dashboard/Products";
-import UsersPage from "./pages/Dashboard/Users";
 import AdminsPage from "./pages/Dashboard/Admins";
 import CategoryPage from "./pages/Dashboard/Category";
-import NotificationsPage from "./pages/Dashboard/Notification";
-import ReportsPage from "./pages/Dashboard/Report";
-import ProfileAdmin from "./pages/Dashboard/Profile";
-import OrderList from "./pages/Dashboard/OrderList";
 import DashboardLayout from "./pages/Dashboard/Layout";
+import NotificationsPage from "./pages/Dashboard/Notification";
+import OrderList from "./pages/Dashboard/OrderList";
+import ProductsPage from "./pages/Dashboard/Products";
+import ProfileAdmin from "./pages/Dashboard/Profile";
+import ReportsPage from "./pages/Dashboard/Report";
+import UsersPage from "./pages/Dashboard/Users";
+import Login from "./pages/auth/Login";
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       {/* DASHBOARD LAYOUT */}
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardHome />} />
