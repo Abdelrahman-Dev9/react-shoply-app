@@ -141,6 +141,17 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Products"],
     }),
+    addProduct: builder.mutation({
+      query: (formData: FormData) => ({
+        url: "/product",
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
@@ -158,4 +169,5 @@ export const {
   useEditUserMutation,
   useAddUserMutation,
   useGetProductsQuery,
+  useAddProductMutation,
 } = authApi;
