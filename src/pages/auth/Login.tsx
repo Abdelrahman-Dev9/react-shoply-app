@@ -10,6 +10,7 @@ import LoginImage from "../../assets/login-image.png";
 import logo from "../../assets/logo.png";
 
 import { useLoginMutation } from "@/redux/services/authApi";
+import { setAdminToken } from "@/utils/auth";
 
 const loginSchema = z.object({
   email: z
@@ -53,8 +54,11 @@ const Login = () => {
         password: data.password,
       }).unwrap();
 
-      console.log("Login success:", res);
-      navigate("/dashboard");
+      // ✅ SAVE TOKEN FIRST
+      setAdminToken(res.token); // adjust if API uses different key
+
+      // ✅ THEN NAVIGATE
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
       console.log("Login error:", error);
       alert(error?.data?.message || "Login failed");

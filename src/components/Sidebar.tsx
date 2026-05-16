@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { removeAdminToken } from "@/utils/auth";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -44,6 +45,13 @@ const Sidebar = ({
   const { data: admins } = useGetAdminsQuery({});
   const { data: users } = useGetUsersQuery({});
   const { data: products } = useGetProductsQuery({});
+
+  const handleLogout = () => {
+    window.confirm("Are you sure you want to logout?");
+
+    removeAdminToken(); // clear auth
+    navigate("/login", { replace: true }); // go to login
+  };
 
   // console.log(users.usercount);
 
@@ -146,7 +154,10 @@ const Sidebar = ({
 
       {/* Bottom */}
       <div className="px-3 pb-4 border-t border-gray-100 pt-3">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500"
+        >
           <LogOut size={18} />
           {!sidebarCollapsed && <span>Logout</span>}
         </button>
