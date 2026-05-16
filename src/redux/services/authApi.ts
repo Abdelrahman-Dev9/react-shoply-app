@@ -107,6 +107,7 @@ export const authApi = baseApi.injectEndpoints({
           Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
         },
       }),
+      providesTags: ["Users"],
     }),
     editUser: builder.mutation({
       query: ({ id, formData }) => ({
@@ -117,6 +118,7 @@ export const authApi = baseApi.injectEndpoints({
           Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
         },
       }),
+      invalidatesTags: ["Users"],
     }),
     getProducts: builder.query({
       query: (params) => ({

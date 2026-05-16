@@ -7,7 +7,7 @@ export const baseApi = createApi({
     baseUrl: "https://priceo.vercel.app",
   }),
 
-  tagTypes: ["Admins", "Products"],
+  tagTypes: ["Users", "Admins", "Products"],
 
   endpoints: () => ({}),
 });
