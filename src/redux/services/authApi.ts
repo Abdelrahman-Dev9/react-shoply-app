@@ -99,6 +99,18 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Admins"],
     }),
+    addUser: builder.mutation({
+      query: (formData) => ({
+        url: "/admin/user",
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+
+      invalidatesTags: ["Users"],
+    }),
     getUsers: builder.query({
       query: () => ({
         url: "/admin/user",
@@ -109,6 +121,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Users"],
     }),
+
     editUser: builder.mutation({
       query: ({ id, formData }) => ({
         url: `/admin/user/${id}`,
@@ -143,5 +156,6 @@ export const {
   useEditAdminMutation,
   useGetUsersQuery,
   useEditUserMutation,
+  useAddUserMutation,
   useGetProductsQuery,
 } = authApi;
