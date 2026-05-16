@@ -3,16 +3,32 @@ import UserDetailModal from "@/components/admins/adminsDetails";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useGetAdminsQuery } from "@/redux/services/authApi";
-import { Loader2, Plus } from "lucide-react";
+import {
+  useAddAdminMutation,
+  useGetAdminsQuery,
+} from "@/redux/services/authApi";
+import { Loader2, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const AdminsPage = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<Admin | null>(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  const { data, isLoading, error } = useGetAdminsQuery({});
+  // ✅ FIX: form state (was missing in usage)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
 
+  // API
+  const [addAdmin, { isLoading: addingAdmin }] = useAddAdminMutation();
+  const { data, isLoading, error } = useGetAdminsQuery(undefined);
+
+  // ADMINS
   const admins: Admin[] = useMemo(() => {
     return (
       data?.allAdmins?.map((admin: Admin) => ({
@@ -22,14 +38,50 @@ const AdminsPage = () => {
     );
   }, [data]);
 
+  // FILTER ADMINS
   const filteredAdmins = useMemo(() => {
-    return admins.filter(
-      (admin) =>
-        admin.name.toLowerCase().includes(search.toLowerCase()) ||
-        admin.email.toLowerCase().includes(search.toLowerCase()) ||
-        admin.phone.includes(search)
-    );
+    return admins.filter((admin) => {
+      const searchValue = search.toLowerCase();
+
+      return (
+        admin?.name?.toLowerCase().includes(searchValue) ||
+        admin?.email?.toLowerCase().includes(searchValue) ||
+        admin?.phone?.includes(search)
+      );
+    });
   }, [admins, search]);
+
+  // ADD ADMIN
+  const handleAddAdmin = async (formData: any) => {
+    try {
+      setServerError("");
+
+      await addAdmin({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone: formData.phone.trim(),
+      }).unwrap();
+
+      setOpenAddModal(false);
+
+      // reset form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+      });
+    } catch (err: any) {
+      console.log(err);
+
+      setServerError(
+        err?.data?.message ||
+          err?.data?.errors?.[0]?.msg ||
+          "Failed to add admin"
+      );
+    }
+  };
 
   if (error) {
     return <div className="p-6 text-red-500">Failed to load admins</div>;
@@ -49,7 +101,10 @@ const AdminsPage = () => {
             className="max-w-sm"
           />
 
-          <button className="flex items-center gap-2 rounded-lg bg-blue-900 px-4 py-2 text-white transition hover:bg-blue-800">
+          <button
+            onClick={() => setOpenAddModal(true)}
+            className="flex items-center gap-2 rounded-lg bg-blue-900 px-4 py-2 text-white transition hover:bg-blue-800"
+          >
             <Plus size={16} />
             Add Admin
           </button>
@@ -73,34 +128,26 @@ const AdminsPage = () => {
                     onClick={() => setSelectedUser(admin)}
                     className="cursor-pointer border-t transition hover:bg-gray-50"
                   >
-                    {/* USER */}
                     <td className="flex items-center gap-3 p-4">
                       <Avatar>
-                        <AvatarImage src={admin.profileImage} />
-
+                        <AvatarImage src={admin.profileImage || ""} />
                         <AvatarFallback>
-                          {admin.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
+                          {admin?.name
+                            ?.split(" ")
+                            ?.map((n) => n[0])
+                            ?.join("")
+                            ?.slice(0, 2)
+                            ?.toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
 
                       <span className="font-medium">{admin.name}</span>
                     </td>
 
-                    {/* PHONE */}
                     <td>{admin.phone}</td>
-
-                    {/* EMAIL */}
                     <td>{admin.email}</td>
-
-                    {/* ROLE */}
                     <td>Admin</td>
 
-                    {/* STATUS */}
                     <td>
                       <Badge
                         className={`hover:bg-transparent ${
@@ -120,7 +167,108 @@ const AdminsPage = () => {
         )}
       </div>
 
-      {/* MODAL */}
+      {/* ADD ADMIN MODAL */}
+      {openAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            {/* HEADER */}
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Add Admin</h2>
+
+              <button
+                onClick={() => {
+                  setOpenAddModal(false);
+                  setServerError("");
+                }}
+              >
+                <X />
+              </button>
+            </div>
+
+            {/* FORM */}
+            <div className="space-y-4">
+              {/* NAME */}
+              <Input
+                placeholder="Name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
+              />
+
+              {/* EMAIL */}
+              <Input
+                placeholder="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
+              />
+
+              {/* PASSWORD */}
+              <Input
+                placeholder="Password"
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    password: e.target.value,
+                  }))
+                }
+              />
+
+              {/* PHONE */}
+              <Input
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    phone: e.target.value,
+                  }))
+                }
+              />
+
+              {/* ERROR */}
+              {serverError && (
+                <p className="text-sm text-red-500">{serverError}</p>
+              )}
+
+              {/* BUTTON */}
+              <button
+                onClick={() => handleAddAdmin(formData)}
+                disabled={
+                  addingAdmin ||
+                  !formData.name ||
+                  !formData.email ||
+                  !formData.password ||
+                  !formData.phone
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-900 py-3 text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {addingAdmin ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Admin"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* USER DETAILS */}
       {selectedUser && (
         <UserDetailModal
           user={selectedUser}

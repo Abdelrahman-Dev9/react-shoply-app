@@ -65,7 +65,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Admins"],
     }),
-    createAdmin: builder.mutation({
+    addAdmin: builder.mutation({
       query: (body) => ({
         url: "/admin/addAdmin",
         method: "POST",
@@ -151,7 +151,7 @@ export const {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
   useGetAdminsQuery,
-  useCreateAdminMutation,
+  useAddAdminMutation,
   useDeleteAdminMutation,
   useEditAdminMutation,
   useGetUsersQuery,
