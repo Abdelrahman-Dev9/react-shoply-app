@@ -108,6 +108,16 @@ export const authApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    editUser: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `/admin/user/${id}`,
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+    }),
     getProducts: builder.query({
       query: (params) => ({
         url: "/product",
@@ -130,5 +140,6 @@ export const {
   useDeleteAdminMutation,
   useEditAdminMutation,
   useGetUsersQuery,
+  useEditUserMutation,
   useGetProductsQuery,
 } = authApi;
