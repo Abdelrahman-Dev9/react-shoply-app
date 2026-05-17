@@ -65,6 +65,17 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Admins"],
     }),
+    getAdminById: builder.query({
+      query: (id: string) => ({
+        url: `/admin/getAdmin/${id}`,
+        method: "GET",
+        headers: {
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+        },
+      }),
+
+      providesTags: ["Admins"],
+    }),
     addAdmin: builder.mutation({
       query: (body) => ({
         url: "/admin/addAdmin",
@@ -162,6 +173,7 @@ export const {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
   useGetAdminsQuery,
+  useGetAdminByIdQuery,
   useAddAdminMutation,
   useDeleteAdminMutation,
   useEditAdminMutation,

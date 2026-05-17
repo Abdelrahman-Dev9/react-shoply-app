@@ -1,4 +1,5 @@
 import {
+  useGetAdminByIdQuery,
   useGetAdminsQuery,
   useGetCategoriesQuery,
   useGetProductsQuery,
@@ -19,7 +20,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { removeAdminToken } from "@/utils/auth";
+import { getAdminId, removeAdminToken } from "@/utils/auth";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -36,6 +37,7 @@ const Sidebar = ({
 }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const adminId = getAdminId();
 
   const { data, isLoading } = useGetProfileQuery(undefined);
 
@@ -45,6 +47,9 @@ const Sidebar = ({
   const { data: admins } = useGetAdminsQuery({});
   const { data: users } = useGetUsersQuery({});
   const { data: products } = useGetProductsQuery({});
+  const { data: admin } = useGetAdminByIdQuery(adminId || "");
+
+  // console.log(admin);
 
   const handleLogout = () => {
     window.confirm("Are you sure you want to logout?");
@@ -168,9 +173,9 @@ const Sidebar = ({
             onClick={() => navigate("/profile")}
           >
             <div className="w-8 h-8 rounded-full bg-[#1e3a8a] flex items-center justify-center">
-              {data?.admin?.profileImage ? (
+              {admin?.admin?.profileImage ? (
                 <img
-                  src={data.admin.profileImage}
+                  src={admin?.admin?.profileImage}
                   alt="profile"
                   className="w-10 h-10 rounded-full object-cover"
                 />
@@ -185,7 +190,7 @@ const Sidebar = ({
               <p className="text-xs text-gray-400">Welcome back 👋</p>
 
               <p className="text-sm font-semibold text-gray-700">
-                {isLoading ? "Loading..." : data?.admin?.name}
+                {isLoading ? "Loading..." : admin?.admin?.name}
               </p>
             </div>
           </div>
