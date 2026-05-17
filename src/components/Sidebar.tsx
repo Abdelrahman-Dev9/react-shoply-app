@@ -3,9 +3,9 @@ import {
   useGetAdminsQuery,
   useGetCategoriesQuery,
   useGetProductsQuery,
-  useGetProfileQuery,
   useGetUsersQuery,
 } from "@/redux/services/authApi";
+import { getAdminId, removeAdminToken } from "@/utils/auth";
 import {
   BarChart2,
   Bell,
@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { getAdminId, removeAdminToken } from "@/utils/auth";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -38,8 +37,6 @@ const Sidebar = ({
   const navigate = useNavigate();
   const location = useLocation();
   const adminId = getAdminId();
-
-  const { data, isLoading } = useGetProfileQuery(undefined);
 
   const { data: categories } = useGetCategoriesQuery({
     page: 1,
