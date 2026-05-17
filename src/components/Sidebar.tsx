@@ -185,10 +185,6 @@ const Sidebar = ({
 
             <div>
               <p className="text-xs text-gray-400">Welcome back 👋</p>
-
-              <p className="text-sm font-semibold text-gray-700">
-                {isLoading ? "Loading..." : admin?.admin?.name}
-              </p>
             </div>
           </div>
         )}
