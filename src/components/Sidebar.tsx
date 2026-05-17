@@ -185,6 +185,9 @@ const Sidebar = ({
 
             <div>
               <p className="text-xs text-gray-400">Welcome back 👋</p>
+              <p className="text-sm font-medium">
+                {admin?.admin?.name || "Admin"}
+              </p>
             </div>
           </div>
         )}

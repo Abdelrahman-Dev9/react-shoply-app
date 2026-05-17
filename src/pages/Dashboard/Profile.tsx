@@ -6,9 +6,10 @@ import {
   type ProfileFormData,
 } from "@/constant/constant";
 import {
-  useGetProfileQuery,
+  useGetAdminByIdQuery,
   useUpdateProfileMutation,
 } from "@/redux/services/authApi";
+import { getAdminId } from "@/utils/auth";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
@@ -17,7 +18,8 @@ import { useForm } from "react-hook-form";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 
 const ProfileAdmin = () => {
-  const { data, isLoading } = useGetProfileQuery(undefined);
+  const adminId = getAdminId();
+  const { data, isLoading } = useGetAdminByIdQuery(adminId || "");
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -113,9 +115,9 @@ const ProfileAdmin = () => {
               onClick={() => fileRef.current?.click()}
               className="group relative flex h-[336px] w-[315px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed bg-gray-100"
             >
-              {avatar || data?.admin?.profileImage ? (
+              {avatar || data?.data?.profileImage ? (
                 <img
-                  src={avatar || data?.admin?.profileImage}
+                  src={avatar || data?.data?.profileImage}
                   className="h-full w-full object-cover"
                 />
               ) : (
