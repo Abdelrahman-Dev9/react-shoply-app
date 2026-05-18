@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useVerifyCodeMutation } from "@/redux/services/authApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import OTPInput from "react-otp-input";
+import { useNavigate } from "react-router-dom";
+import * as z from "zod";
 import forgetPassword from "../../assets/forget-password-image.png";
 import logo from "../../assets/logo.png";
 import verifyCodeIcon from "../../assets/verify-code-icon.png";
@@ -21,6 +22,7 @@ type VerifyCodeFormValues = z.infer<typeof verifyCodeSchema>;
 const VerifyCode = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
+  const [verifyCode, { isLoading }] = useVerifyCodeMutation();
 
   const {
     handleSubmit,
@@ -31,12 +33,18 @@ const VerifyCode = () => {
     defaultValues: { otp: "" },
   });
 
-  const onSubmit = (data: VerifyCodeFormValues) => {
-    console.log("OTP entered:", data.otp);
-    // TODO: Call your verify OTP API here
+  const onSubmit = async (data: VerifyCodeFormValues) => {
+    try {
+      const res = await verifyCode(data.otp).unwrap();
 
-    // Navigate only after successful verification
-    navigate("/newPassword");
+      console.log("VERIFY SUCCESS:", res);
+
+      navigate("/newPassword");
+    } catch (err: any) {
+      console.log("VERIFY ERROR:", err);
+
+      alert(err?.data?.message || "Invalid code");
+    }
   };
 
   // Sync OTPInput with React Hook Form
@@ -125,9 +133,10 @@ const VerifyCode = () => {
 
               <button
                 type="submit"
-                className="mt-4 bg-[#1e3a6e] text-white px-6 py-2 rounded-lg transition w-[78%] cursor-pointer"
+                disabled={isLoading}
+                className="mt-4 bg-[#1e3a6e] text-white px-6 py-2 rounded-lg transition w-[78%] cursor-pointer disabled:opacity-60"
               >
-                Reset Password
+                {isLoading ? "Verifying..." : "Reset Password"}
               </button>
             </form>
           </div>

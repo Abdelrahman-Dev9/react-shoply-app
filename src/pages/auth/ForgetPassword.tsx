@@ -1,200 +1,178 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { CiMail } from "react-icons/ci";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import forgetPassword from "../../assets/forget-password-image.png";
-import logo from "../../assets/logo.png";
 import forgetPasswordIcon from "../../assets/forget-password-icon.png";
-import { CiMail } from "react-icons/ci";
+import logo from "../../assets/logo.png";
+
+import { useForgetPasswordMutation } from "@/redux/services/authApi";
+import { useState } from "react";
 
 const forgotSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
+  email: z.string().min(1, "Email is required").email("Invalid email"),
 });
 
 const ForgotPassword = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
+
+  const [forgetPassword, { isLoading }] = useForgetPasswordMutation();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(forgotSchema),
     defaultValues: { email: "" },
   });
 
   const onSubmit = async (data: z.infer<typeof forgotSchema>) => {
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    console.log("Reset link sent to:", data.email);
+    try {
+      const res = await forgetPassword(data.email).unwrap();
+
+      // store token for next step
+      if (res?.token) {
+        localStorage.setItem("reset_token", res.token);
+      }
+
+      // store email for verify screen
+      localStorage.setItem("reset_email", data.email);
+
+      // console.log("SUCCESS:", res);
+
+      setSuccess(true);
+    } catch (err: any) {
+      console.log("ERROR:", err);
+      alert(err?.data?.message || "Something went wrong");
+    }
   };
 
   return (
     <div className="h-screen flex flex-col lg:flex-row font-sans bg-gray-100">
-      {/* ── Left Panel ── */}
-      <img
+      {/* LEFT IMAGE */}
+      {/* <img
         src={forgetPassword}
-        alt="forget-password-image"
-        className="hidden sm:hidden lg:block w-[50%] p-10"
-      />
-      {/* ── Right Panel ── */}
-      <div className="flex-1 flex flex-col min-h-screen bg-white">
-        {/* Nav */}
-        <div className="flex items-center justify-between px-8 ">
-          {/* Logo */}
-          <div className="px-8 pt-8 pb-2">
-            <div className="flex items-center gap-1.5">
-              {/* Priceo logo icon */}
+        alt="forget-password"
+        className="hidden lg:block w-[50%] p-10"
+      /> */}
 
-              <img src={logo} alt="logo" />
-            </div>
-          </div>
-          {/* Already have account */}
-          <p className="text-sm ">
-            <span className="text-[14px] font-semibold ">
-              Already have an account?
-            </span>
-            <a
-              onClick={() => Navigate("/login")}
-              className="text-gray-500 font-semibold hover:underline underline-offset-2 ml-2 underline cursor-pointer"
+      {/* RIGHT SIDE */}
+      <div className="flex-1 flex flex-col bg-white min-h-screen">
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-8 pt-6">
+          <img src={logo} alt="logo" />
+
+          <p className="text-sm">
+            <span className="font-semibold">Already have an account?</span>
+            <span
+              onClick={() => navigate("/login")}
+              className="ml-2 text-gray-500 font-semibold cursor-pointer hover:underline"
             >
               Log in
-            </a>
+            </span>
           </p>
         </div>
 
-        {/* Form Area */}
-        <div className="flex-1 flex items-center justify-center px-6 py-10">
+        {/* FORM AREA */}
+        <div className="flex-1 flex items-center justify-center px-6">
           <div className="w-full max-w-md">
-            {/* Icon badge */}
-            <div className="flex justify-center items-center mb-4">
-              <img src={forgetPasswordIcon} alt="" />
+            <div className="flex justify-center mb-4">
+              <img src={forgetPasswordIcon} />
             </div>
 
-            {/* Heading */}
-            <div className="text-center mb-8">
-              <h1 className="text-[32px]  font-bold text-[#1e3a6e] mb-3 tracking-tight leading-tight">
-                Forgot your password?
-              </h1>
+            <h1 className="text-center text-[32px] font-bold text-[#1e3a6e]">
+              Forgot your password?
+            </h1>
 
-              <p className="text-gray-500 text-[14px] font-semibold mb-2">
-                A code will be sent to your email to reset password
-              </p>
-              <hr className="w-70 mx-auto border-[#D1D5DB]" />
-            </div>
+            <p className="text-center text-gray-500 text-sm mt-2">
+              We will send a reset code to your email
+            </p>
 
-            {/* Success state */}
-            {isSubmitSuccessful ? (
-              <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                <div className="rounded-2xl bg-white border border-[#1e3a6e]/20 p-6 text-center space-y-2 shadow-lg w-[90%] max-w-sm">
-                  <div className="flex justify-center mb-3">
-                    <div className="w-12 h-12 rounded-full bg-[#1e3a6e]/10 flex items-center justify-center">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#1e3a6e"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </div>
+            {/* SUCCESS MODAL */}
+            {success ? (
+              <div className="fixed inset-0 flex items-center justify-center bg-black/40">
+                <div className="bg-white p-6 rounded-2xl w-[90%] max-w-sm text-center">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+                    ✔
                   </div>
 
-                  <p className="font-bold text-[#1e3a6e] text-lg">
-                    Check your inbox!
-                  </p>
+                  <h2 className="font-bold text-lg mt-3 text-[#1e3a6e]">
+                    Check your inbox
+                  </h2>
 
-                  <p className="text-gray-500 text-sm">
-                    We've sent a password reset code to your email address.
+                  <p className="text-sm text-gray-500 mt-2">
+                    Reset code sent successfully
                   </p>
 
                   <button
-                    onClick={() => Navigate("/verifyCode")}
-                    className="mt-4 w-full py-2 rounded-lg bg-[#1e3a6e] hover:bg-[#162e5a] active:bg-[#0f2040] text-white text-sm font-semibold transition"
+                    onClick={() => navigate("/verifyCode")}
+                    className="mt-4 w-full bg-[#1e3a6e] text-white py-2 rounded-lg"
                   >
-                    OK
+                    Continue
                   </button>
                 </div>
               </div>
             ) : (
-              /* Form */
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                noValidate
-                className="space-y-5"
+                className="mt-8 space-y-5"
               >
-                {/* Email field */}
+                {/* EMAIL */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                      <CiMail size={20} />
-                    </span>
+                  <label className="text-sm font-semibold">Email</label>
+
+                  <div className="relative mt-2">
+                    <CiMail className="absolute left-3 top-3.5 text-gray-400" />
+
                     <input
                       type="email"
-                      placeholder="Email"
+                      placeholder="Enter email"
                       {...register("email")}
-                      className={`w-full pl-11 pr-4 py-3.5 bg-white border rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all shadow-sm ${
-                        errors.email
-                          ? "border-red-400 focus:ring-red-300"
-                          : "border-gray-200 focus:ring-[#1e3a6e]"
+                      className={`w-full pl-10 pr-3 py-3 border rounded-xl ${
+                        errors.email ? "border-red-400" : "border-gray-200"
                       }`}
                     />
                   </div>
+
                   {errors.email && (
-                    <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                    <p className="text-xs text-red-500 mt-1">
                       {errors.email.message}
                     </p>
                   )}
                 </div>
 
-                {/* Submit button */}
+                {/* BUTTON */}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="cursor-pointer w-full py-4 bg-[#1e3a6e] hover:bg-[#162e5a] active:bg-[#0f2040] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold text-base rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                  className="w-full py-3 bg-[#1e3a6e] text-white rounded-xl font-bold disabled:opacity-60"
                 >
-                  {isSubmitting ? <>loading...</> : "Continue"}
+                  {isLoading ? "Sending..." : "Continue"}
                 </button>
 
-                {/* Back to login */}
-                <div className="text-center pt-1">
-                  <a
-                    href="#"
-                    onClick={() => Navigate("/login")}
-                    className="text-sm text-gray-500 hover:text-[#1e3a6e] transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <FaArrowLeftLong className="mt-1" />
-                    Back to login
-                  </a>
-                </div>
+                {/* BACK */}
+                <p
+                  onClick={() => navigate("/login")}
+                  className="text-center text-sm text-gray-500 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <FaArrowLeftLong />
+                  Back to login
+                </p>
               </form>
             )}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center pb-8 px-4">
-          <p className="text-sm font-bold text-gray-700">
-            Created By Priceo Team
-          </p>
-          <a
-            href="#"
-            className="text-sm text-[#1e3a6e] hover:underline underline-offset-2 font-medium"
-          >
-            Contact us
-          </a>
+        {/* FOOTER */}
+        <div className="text-center pb-6 text-sm text-gray-600">
+          Created by Priceo Team
         </div>
       </div>
     </div>
   );
 };
+
 export default ForgotPassword;

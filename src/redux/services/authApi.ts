@@ -10,6 +10,31 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    forgetPassword: builder.mutation({
+      query: (email: string) => ({
+        url: "/auth/forgetpass",
+        method: "POST",
+        body: { email },
+      }),
+    }),
+    verifyCode: builder.mutation({
+      query: (resetCode: string) => {
+        const token = localStorage.getItem("reset_token");
+
+        return {
+          url: "/auth/verifycode",
+          method: "POST",
+          body: {
+            resetCode,
+          },
+
+          headers: {
+            Authorization: token || "",
+          },
+        };
+      },
+    }),
+
     getProfile: builder.query({
       query: () => ({
         url: "/admin/profile",
@@ -168,6 +193,8 @@ export const authApi = baseApi.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useForgetPasswordMutation,
+  useVerifyCodeMutation,
   useGetProfileQuery,
   useUpdateProfileMutation,
   useCreateCategoryMutation,

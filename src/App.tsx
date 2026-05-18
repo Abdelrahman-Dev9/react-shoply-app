@@ -12,6 +12,9 @@ import ReportsPage from "./pages/Dashboard/Report";
 import UsersPage from "./pages/Dashboard/Users";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ForgotPassword from "./pages/auth/ForgetPassword";
+import VerifyCode from "./pages/auth/VerifyCode";
+import NewPassword from "./pages/auth/NewPassword";
 
 const App = () => {
   return (
@@ -19,6 +22,9 @@ const App = () => {
       {/* PUBLIC ROUTES */}
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Login />} />
+      <Route path="/forgetPassword" element={<ForgotPassword />} />
+      <Route path="/verifyCode" element={<VerifyCode />} />
+      <Route path="/newPassword" element={<NewPassword />} />
 
       {/* PROTECTED DASHBOARD ROUTES */}
       <Route element={<ProtectedRoute />}>
