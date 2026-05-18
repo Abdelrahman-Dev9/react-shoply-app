@@ -8,6 +8,7 @@ import { z } from "zod";
 import forgetPasswordIcon from "../../assets/forget-password-icon.png";
 import forgetPassword from "../../assets/forget-password-image.png";
 import logo from "../../assets/logo.png";
+import { useResetPasswordMutation } from "@/redux/services/authApi";
 
 // ✅ Schema
 const forgotSchema = z
@@ -27,6 +28,8 @@ const NewPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [resetPassword] = useResetPasswordMutation();
+
   const {
     register,
     handleSubmit,
@@ -37,8 +40,20 @@ const NewPassword = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof forgotSchema>) => {
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    console.log("New password:", data.password);
+    try {
+      await resetPassword({
+        newPassword: data.password,
+        passwordConfirm: data.confirmPassword,
+      }).unwrap();
+
+      localStorage.removeItem("reset_token");
+
+      Navigate("/login");
+    } catch (err: any) {
+      console.log("RESET ERROR:", err);
+
+      alert(err?.data?.message || "Something went wrong");
+    }
   };
 
   return (

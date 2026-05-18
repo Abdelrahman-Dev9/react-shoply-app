@@ -34,6 +34,31 @@ export const authApi = baseApi.injectEndpoints({
         };
       },
     }),
+    resetPassword: builder.mutation({
+      query: ({
+        newPassword,
+        passwordConfirm,
+      }: {
+        newPassword: string;
+        passwordConfirm: string;
+      }) => {
+        const token = localStorage.getItem("reset_token");
+
+        return {
+          url: "/auth/resetpassword",
+          method: "PUT",
+
+          body: {
+            newPassword,
+            passwordConfirm,
+          },
+
+          headers: {
+            Authorization: token || "",
+          },
+        };
+      },
+    }),
 
     getProfile: builder.query({
       query: () => ({
@@ -195,6 +220,7 @@ export const {
   useLoginMutation,
   useForgetPasswordMutation,
   useVerifyCodeMutation,
+  useResetPasswordMutation,
   useGetProfileQuery,
   useUpdateProfileMutation,
   useCreateCategoryMutation,

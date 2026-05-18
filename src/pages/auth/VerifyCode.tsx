@@ -35,9 +35,7 @@ const VerifyCode = () => {
 
   const onSubmit = async (data: VerifyCodeFormValues) => {
     try {
-      const res = await verifyCode(data.otp).unwrap();
-
-      console.log("VERIFY SUCCESS:", res);
+      await verifyCode(data.otp).unwrap();
 
       navigate("/newPassword");
     } catch (err: any) {

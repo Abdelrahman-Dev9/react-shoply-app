@@ -41,8 +41,6 @@ const ForgotPassword = () => {
       // store email for verify screen
       localStorage.setItem("reset_email", data.email);
 
-      // console.log("SUCCESS:", res);
-
       setSuccess(true);
     } catch (err: any) {
       console.log("ERROR:", err);
