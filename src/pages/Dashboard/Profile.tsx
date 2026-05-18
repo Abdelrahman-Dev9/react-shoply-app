@@ -115,9 +115,9 @@ const ProfileAdmin = () => {
               onClick={() => fileRef.current?.click()}
               className="group relative flex h-[336px] w-[315px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed bg-gray-100"
             >
-              {avatar || data?.data?.profileImage ? (
+              {avatar || data?.admin?.profileImage ? (
                 <img
-                  src={avatar || data?.data?.profileImage}
+                  src={avatar || data?.admin?.profileImage}
                   className="h-full w-full object-cover"
                 />
               ) : (

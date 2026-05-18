@@ -15,7 +15,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/admin/profile",
         method: "GET",
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
     }),
@@ -25,7 +25,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "PUT",
         body: formData,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
     }),
@@ -35,7 +35,7 @@ export const authApi = baseApi.injectEndpoints({
     //     method: "PUT",
     //     body,
     //     headers: {
-    //       Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+    //       Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
     //     },
     //   }),
     // }),
@@ -45,7 +45,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
     }),
@@ -60,7 +60,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/admin/getAdmins",
         method: "GET",
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
       providesTags: ["Admins"],
@@ -70,7 +70,7 @@ export const authApi = baseApi.injectEndpoints({
         url: `/admin/getAdmin/${id}`,
         method: "GET",
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
 
@@ -82,7 +82,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
 
@@ -93,7 +93,7 @@ export const authApi = baseApi.injectEndpoints({
         url: `/admin/deleteAdmin/${id}`,
         method: "DELETE",
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
 
@@ -105,7 +105,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
       invalidatesTags: ["Admins"],
@@ -116,7 +116,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
 
@@ -127,7 +127,7 @@ export const authApi = baseApi.injectEndpoints({
         url: "/admin/user",
         method: "GET",
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
       providesTags: ["Users"],
@@ -139,7 +139,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "PUT",
         body: formData,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
       invalidatesTags: ["Users"],
@@ -158,7 +158,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWZiMTU2NzRjMDI4NTI0MDE4ZWQ3OGEiLCJpYXQiOjE3NzgyMDgxNDIsImV4cCI6MTc4NTk4NDE0Mn0.6Vmv44JIuBFeXhIEVV_O4OWOG7GLnuufYbmg7TKcxHw`,
+          Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTBhMjQ4ZjY1MDdkODhlNGY4ZjcyZTEiLCJpYXQiOjE3NzkwNjM4MzYsImV4cCI6MTc4NjgzOTgzNn0.u9xdEOHyEEpf24ivbkLtoL2R7sieMWiqpw6CFZnClWI`,
         },
       }),
       invalidatesTags: ["Products"],
