@@ -5,6 +5,16 @@ export const baseApi = createApi({
 
   baseQuery: fetchBaseQuery({
     baseUrl: "https://priceo.vercel.app",
+
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("adminToken");
+
+      if (token) {
+        headers.set("Authorization", token);
+      }
+
+      return headers;
+    },
   }),
 
   tagTypes: ["Users", "Admins", "Products"],
