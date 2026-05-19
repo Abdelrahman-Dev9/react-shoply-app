@@ -1,127 +1,118 @@
-import { useAddUserMutation } from "@/redux/services/authApi";
+import { useAddUserMutation } from "@/redux/services/userApi";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, X } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Input } from "../ui/input";
+
+const addUserSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Invalid phone number"),
+  gender: z.enum(["male", "female"]),
+  birthday: z.string().optional(),
+  profileImage: z.instanceof(FileList).optional(),
+});
+
+type AddUserFormData = z.infer<typeof addUserSchema>;
 
 interface Props {
   onClose: () => void;
 }
 
 const AddUser = ({ onClose }: Props) => {
-  const [addUser, { isLoading: isAdding }] = useAddUserMutation();
+  const [addUser, { isLoading }] = useAddUserMutation();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("male");
-  const [birthday, setBirthday] = useState("");
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<AddUserFormData>({
+    resolver: zodResolver(addUserSchema),
+    defaultValues: { gender: "male" },
+  });
 
-  const handleAddUser = async () => {
+  const onSubmit = async (data: AddUserFormData) => {
     try {
       const formData = new FormData();
+      formData.append("name", data.name.trim());
+      formData.append("email", data.email.trim());
+      formData.append("phone", data.phone.trim());
+      formData.append("gender", data.gender);
+      if (data.birthday) formData.append("birthday", data.birthday);
+      if (data.profileImage?.[0])
+        formData.append("profileImage", data.profileImage[0]);
 
-      formData.append("name", name.trim());
-      formData.append("email", email.trim());
-      formData.append("phone", phone.trim());
-      formData.append("gender", gender);
-
-      if (birthday) {
-        formData.append("birthday", birthday);
-      }
-
-      if (profileImage) {
-        formData.append("profileImage", profileImage);
-      }
-
-      const res = await addUser(formData).unwrap();
-
-      console.log(res);
-
-      // RESET
-      setName("");
-      setEmail("");
-      setPhone("");
-      setGender("male");
-      setBirthday("");
-      setProfileImage(null);
-
+      await addUser(formData).unwrap();
       onClose();
     } catch (err: any) {
-      console.log(err);
-
-      alert(
+      const message =
         err?.data?.errors?.[0]?.msg ||
-          err?.data?.message ||
-          "Failed to add user"
-      );
+        err?.data?.message ||
+        "Failed to add user";
+      setError("root", { message });
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-        {/* HEADER */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold">Add User</h2>
-
-          <button onClick={onClose}>
+          <button type="button" onClick={onClose}>
             <X />
           </button>
         </div>
 
-        {/* FORM */}
-        <div className="space-y-4">
-          <Input
-            placeholder="Full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <Input placeholder="Full name" {...register("name")} />
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+            )}
+          </div>
 
-          <Input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div>
+            <Input placeholder="Email" type="email" {...register("email")} />
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+            )}
+          </div>
 
-          <Input
-            placeholder="Phone number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+          <div>
+            <Input placeholder="Phone number" {...register("phone")} />
+            {errors.phone && (
+              <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+            )}
+          </div>
 
-          {/* GENDER */}
           <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
+            {...register("gender")}
             className="w-full rounded-md border p-3 outline-none"
           >
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
 
-          {/* BIRTHDAY */}
-          <Input
-            type="date"
-            value={birthday}
-            onChange={(e) => setBirthday(e.target.value)}
-          />
+          <Input type="date" {...register("birthday")} />
 
-          {/* IMAGE */}
           <Input
             type="file"
             accept="image/*"
-            onChange={(e) => setProfileImage(e.target.files?.[0] || null)}
+            {...register("profileImage")}
           />
 
-          {/* BUTTON */}
+          {errors.root && (
+            <p className="text-sm text-red-500">{errors.root.message}</p>
+          )}
+
           <button
-            onClick={handleAddUser}
-            disabled={isAdding}
+            type="submit"
+            disabled={isLoading}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-900 py-3 text-white transition hover:bg-blue-800 disabled:opacity-50"
           >
-            {isAdding ? (
+            {isLoading ? (
               <>
                 <Loader2 className="animate-spin" size={18} />
                 Adding...
@@ -130,7 +121,7 @@ const AddUser = ({ onClose }: Props) => {
               "Add User"
             )}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

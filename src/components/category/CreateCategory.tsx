@@ -1,37 +1,48 @@
-import React from "react";
+import { useCreateCategoryMutation } from "@/redux/services/categoryApi";
+import { X } from "lucide-react";
+import { useState } from "react";
 
-type Props = {
+interface Props {
   open: boolean;
-  setOpen: (v: boolean) => void;
+  onClose: () => void;
+}
 
-  name: string;
-  setName: (v: string) => void;
+const CreateCategory = ({ open, onClose }: Props) => {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState<File | null>(null);
 
-  image: File | null;
-  setImage: (v: File | null) => void;
+  const [createCategory, { isLoading }] = useCreateCategoryMutation();
 
-  handleCreate: () => void;
-  creating: boolean;
-};
-
-const CreateCategory: React.FC<Props> = ({
-  open,
-  setOpen,
-  name,
-  setName,
-  setImage,
-  handleCreate,
-  creating,
-}) => {
   if (!open) return null;
 
+  const handleCreate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      if (image) formData.append("image", image);
+
+      await createCategory(formData).unwrap();
+
+      setName("");
+      setImage(null);
+      onClose();
+    } catch (err) {
+      console.error("Create category failed:", err);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-5 rounded-xl w-[400px]">
-        <h2 className="text-lg font-bold mb-3">Add Category</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="w-[400px] rounded-xl bg-white p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-bold">Add Category</h2>
+          <button type="button" onClick={onClose}>
+            <X size={18} />
+          </button>
+        </div>
 
         <input
-          className="w-full border p-2 rounded mb-3"
+          className="mb-3 w-full rounded border p-2"
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -45,17 +56,19 @@ const CreateCategory: React.FC<Props> = ({
 
         <div className="flex justify-end gap-2">
           <button
-            onClick={() => setOpen(false)}
-            className="px-3 py-1 border rounded"
+            type="button"
+            onClick={onClose}
+            className="rounded border px-3 py-1"
           >
             Cancel
           </button>
-
           <button
+            type="button"
             onClick={handleCreate}
-            className="px-3 py-1 bg-blue-900 text-white rounded"
+            disabled={isLoading || !name}
+            className="rounded bg-blue-900 px-3 py-1 text-white disabled:opacity-50"
           >
-            {creating ? "Creating..." : "Create"}
+            {isLoading ? "Creating..." : "Create"}
           </button>
         </div>
       </div>
