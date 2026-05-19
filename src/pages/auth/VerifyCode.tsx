@@ -26,6 +26,7 @@ const VerifyCode = () => {
 
   const {
     handleSubmit,
+    setError,
     formState: { errors },
     setValue,
   } = useForm<VerifyCodeFormValues>({
@@ -36,12 +37,11 @@ const VerifyCode = () => {
   const onSubmit = async (data: VerifyCodeFormValues) => {
     try {
       await verifyCode(data.otp).unwrap();
-
       navigate("/newPassword");
     } catch (err: any) {
-      console.log("VERIFY ERROR:", err);
-
-      alert(err?.data?.message || "Invalid code");
+      setError("root", {
+        message: err?.data?.message || "Invalid code. Please try again.",
+      });
     }
   };
 
@@ -127,6 +127,9 @@ const VerifyCode = () => {
               />
               {errors.otp && (
                 <p className="text-red-500 text-sm">{errors.otp.message}</p>
+              )}
+              {errors.root && (
+                <p className="text-red-500 text-sm">{errors.root.message}</p>
               )}
 
               <button

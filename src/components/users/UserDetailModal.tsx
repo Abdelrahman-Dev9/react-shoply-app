@@ -5,18 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-import { useEditUserMutation } from "@/redux/services/authApi";
-
-export type UserStatus = "Active" | "inactive";
-
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  profileImage?: string;
-  status?: UserStatus;
-}
+import { useDeleteUserMutation, useEditUserMutation } from "@/redux/services/userApi";
+import type { User } from "@/types/user.types";
 
 const UserDetailModal = ({
   user,
@@ -28,6 +18,7 @@ const UserDetailModal = ({
   const [isEditing, setIsEditing] = useState(false);
 
   const [editUser, { isLoading }] = useEditUserMutation();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
   const [formData, setFormData] = useState({
     name: user.name,
@@ -68,7 +59,7 @@ const UserDetailModal = ({
 
       setIsEditing(false);
     } catch (error) {
-      console.log(error);
+      console.error("Save user failed:", error);
     }
   };
 
@@ -154,9 +145,21 @@ const UserDetailModal = ({
 
         {/* ACTIONS */}
         <div className="mt-6 flex items-center justify-between">
-          <Button variant="destructive">
+          <Button
+            variant="destructive"
+            disabled={isDeleting}
+            onClick={async () => {
+              if (!window.confirm("Are you sure you want to delete this user?")) return;
+              try {
+                await deleteUser(user._id).unwrap();
+                onClose();
+              } catch (err) {
+                console.error("Delete user failed:", err);
+              }
+            }}
+          >
             <Ban size={16} />
-            Delete
+            {isDeleting ? "Deleting..." : "Delete"}
           </Button>
 
           {isEditing ? (

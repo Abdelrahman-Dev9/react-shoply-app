@@ -1,30 +1,15 @@
 import CategoryDetails from "@/components/category/CategoryDetails";
 import CreateCategory from "@/components/category/CreateCategory";
-import {
-  useCreateCategoryMutation,
-  useGetCategoriesQuery,
-} from "@/redux/services/authApi";
+import { useGetCategoriesQuery } from "@/redux/services/categoryApi";
+import type { Category } from "@/types/category.types";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 
-type Category = {
-  _id: string;
-  name: string;
-  image: string;
-};
-
 const CategoryPage = () => {
   const [open, setOpen] = useState(false);
-
-  const [name, setName] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
-  );
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   const { data, isLoading } = useGetCategoriesQuery({
     keyword: search,
@@ -33,41 +18,17 @@ const CategoryPage = () => {
     sort: "-createdAt",
   });
 
-  const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
-
-  const handleCreate = async () => {
-    try {
-      const formData = new FormData();
-
-      formData.append("name", name);
-
-      if (image) {
-        formData.append("image", image);
-      }
-
-      await createCategory(formData).unwrap();
-
-      setName("");
-      setImage(null);
-      setOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const pagination = data?.paginationResult;
 
   return (
-    <div className="p-6 bg-[#f0f4ff] min-h-screen">
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
+    <div className="min-h-screen bg-[#f0f4ff] p-6">
+      <div className="rounded-2xl bg-white p-5 shadow-sm">
         {/* HEADER */}
-        <div className="flex items-center gap-3 mb-5">
+        <div className="mb-5 flex items-center gap-3">
           <h2 className="text-xl font-bold text-blue-900">Categories</h2>
 
-          {/* SEARCH */}
-          <div className="flex items-center gap-2 border rounded-xl px-3 py-2 flex-1">
+          <div className="flex flex-1 items-center gap-2 rounded-xl border px-3 py-2">
             <Search size={14} />
-
             <input
               value={search}
               onChange={(e) => {
@@ -75,14 +36,13 @@ const CategoryPage = () => {
                 setPage(1);
               }}
               placeholder="Search category"
-              className="flex-1 outline-none text-sm"
+              className="flex-1 text-sm outline-none"
             />
           </div>
 
-          {/* ADD BUTTON */}
           <button
             onClick={() => setOpen(true)}
-            className="bg-blue-900 text-white px-3 py-2 rounded-xl flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl bg-blue-900 px-3 py-2 text-white"
           >
             <Plus size={16} />
             Add
@@ -102,16 +62,15 @@ const CategoryPage = () => {
                   <tr
                     key={cat._id}
                     onClick={() => setSelectedCategory(cat)}
-                    className="border-t cursor-pointer hover:bg-gray-50 transition"
+                    className="cursor-pointer border-t transition hover:bg-gray-50"
                   >
                     <td className="p-3">
                       <img
                         src={cat.image}
                         alt={cat.name}
-                        className="w-[80px] h-[80px] object-contain"
+                        className="h-[80px] w-[80px] object-contain"
                       />
                     </td>
-
                     <td className="p-3 font-medium">{cat.name}</td>
                   </tr>
                 ))
@@ -121,11 +80,11 @@ const CategoryPage = () => {
         </div>
 
         {/* PAGINATION */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="mt-4 flex items-center justify-between">
           <button
             disabled={!pagination?.prev}
             onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="rounded border px-3 py-1 disabled:opacity-50"
           >
             Prev
           </button>
@@ -137,26 +96,15 @@ const CategoryPage = () => {
           <button
             disabled={!pagination?.next}
             onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="rounded border px-3 py-1 disabled:opacity-50"
           >
             Next
           </button>
         </div>
       </div>
 
-      {/* CREATE CATEGORY MODAL */}
-      <CreateCategory
-        open={open}
-        setOpen={setOpen}
-        name={name}
-        setName={setName}
-        image={image}
-        setImage={setImage}
-        handleCreate={handleCreate}
-        creating={creating}
-      />
+      <CreateCategory open={open} onClose={() => setOpen(false)} />
 
-      {/* CATEGORY DETAILS MODAL */}
       {selectedCategory && (
         <CategoryDetails
           selectedCategory={selectedCategory}

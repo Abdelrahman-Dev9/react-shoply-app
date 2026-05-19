@@ -1,8 +1,8 @@
 import { ChevronDown } from "lucide-react";
 
-import StatsGrid from "@/components/ShipmentStats";
-import BarChartComponent from "@/components/BarChart";
-import { ChartAreaDefault } from "@/components/AreaChart";
+import StatsGrid from "@/components/dashboard/ShipmentStats";
+import BarChartComponent from "@/components/dashboard/BarChart";
+import { ChartAreaDefault } from "@/components/dashboard/AreaChart";
 
 const DashboardHome = () => {
   return (

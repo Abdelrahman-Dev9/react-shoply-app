@@ -1,7 +1,7 @@
-import circle from "../assets/circle.png";
-import greenRight from "../assets/green-right.png";
-import orangeClock from "../assets/orange-clock.png";
-import shop from "../assets/shop.png";
+import circle from "@/assets/circle.png";
+import greenRight from "@/assets/green-right.png";
+import orangeClock from "@/assets/orange-clock.png";
+import shop from "@/assets/shop.png";
 
 const StatsGrid = () => {
   const stats = [

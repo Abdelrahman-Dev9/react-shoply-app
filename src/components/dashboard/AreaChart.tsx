@@ -20,7 +20,13 @@ const incomeData = [
   { month: "June", value: 214 },
 ];
 
-const CustomAreaTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}
+
+const CustomAreaTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-2 rounded-lg shadow-md text-sm">

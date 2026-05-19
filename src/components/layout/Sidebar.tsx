@@ -1,10 +1,7 @@
-import {
-  useGetAdminByIdQuery,
-  useGetAdminsQuery,
-  useGetCategoriesQuery,
-  useGetProductsQuery,
-  useGetUsersQuery,
-} from "@/redux/services/authApi";
+import { useGetAdminByIdQuery, useGetAdminsQuery } from "@/redux/services/adminApi";
+import { useGetCategoriesQuery } from "@/redux/services/categoryApi";
+import { useGetProductsQuery } from "@/redux/services/productApi";
+import { useGetUsersQuery } from "@/redux/services/userApi";
 import { getAdminId, removeAdminToken } from "@/utils/auth";
 import {
   BarChart2,
@@ -19,7 +16,7 @@ import {
   Users,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "@/assets/logo.png";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -38,24 +35,18 @@ const Sidebar = ({
   const location = useLocation();
   const adminId = getAdminId();
 
-  const { data: categories } = useGetCategoriesQuery({
-    page: 1,
-  });
-  const { data: admins } = useGetAdminsQuery({});
-  const { data: users } = useGetUsersQuery({});
-  const { data: products } = useGetProductsQuery({});
+  const { data: categories } = useGetCategoriesQuery({ page: 1 });
+  const { data: admins } = useGetAdminsQuery();
+  const { data: users } = useGetUsersQuery();
+  const { data: products } = useGetProductsQuery();
   const { data: admin } = useGetAdminByIdQuery(adminId || "");
 
-  // console.log(admin);
-
   const handleLogout = () => {
-    window.confirm("Are you sure you want to logout?");
+    if (!window.confirm("Are you sure you want to logout?")) return;
 
-    removeAdminToken(); // clear auth
-    navigate("/login", { replace: true }); // go to login
+    removeAdminToken();
+    navigate("/login", { replace: true });
   };
-
-  // console.log(users.usercount);
 
   const activeNav = location.pathname.replace("/", "");
 
