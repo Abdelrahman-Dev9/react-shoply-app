@@ -152,16 +152,16 @@ const ORDERS: Order[] = [
 ];
 
 // ── Status badge ───────────────────────────────────────────────────────────
-const statusStyles: Record<Status, string> = {
+const orderStatusStyles: Record<Status, string> = {
   Active: "border border-[#1e3a8a] text-[#1e3a8a] p-2",
   Pending: "border border-amber-400 text-amber-500 p-2",
   Completed: "border border-green-500 text-green-600 p-2",
 };
 
-function StatusBadge({ status }: { status: Status }) {
+function OrderStatusBadge({ status }: { status: Status }) {
   return (
     <span
-      className={`text-xs font-semibold  rounded-full bg-transparent ${statusStyles[status]}`}
+      className={`rounded-full bg-transparent text-xs font-semibold ${orderStatusStyles[status]}`}
     >
       {status}
     </span>
@@ -196,7 +196,7 @@ function OrderDetail({ order }: { order: Order }) {
         <h2 className="text-[#1e3a8a] font-semibold text-base">
           Order ID: {order.id}
         </h2>
-        <StatusBadge status={status} />
+        <OrderStatusBadge status={status} />
       </div>
 
       {/* Product section */}
@@ -373,7 +373,7 @@ const OrderList = () => {
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">{order.date}</p>
               </div>
-              <StatusBadge status={order.status} />
+              <OrderStatusBadge status={order.status} />
             </button>
           ))}
 

@@ -2,7 +2,7 @@ import { Menu } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

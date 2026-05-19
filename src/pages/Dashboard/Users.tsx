@@ -1,22 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import StatusBadge from "@/components/ui/StatusBadge";
 import AddUser from "@/components/users/AddUser";
 import UserDetailModal from "@/components/users/UserDetailModal";
-import { useGetUsersQuery } from "@/redux/services/authApi";
+import { useGetUsersQuery } from "@/redux/services/userApi";
+import type { User } from "@/types/user.types";
 import { Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-
-type UserStatus = "Active" | "inactive";
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  profileImage?: string;
-  status: UserStatus;
-}
 
 const UsersPage = () => {
   const [search, setSearch] = useState("");
@@ -25,19 +15,14 @@ const UsersPage = () => {
   // ADD USER MODAL
   const [openAddModal, setOpenAddModal] = useState(false);
 
-  const { data, isLoading, error } = useGetUsersQuery({});
+  const { data, isLoading, error } = useGetUsersQuery();
 
-  // MAP BACKEND DATA
   const users: User[] = useMemo(() => {
     return (
-      data?.allUsers?.map((user: any) => ({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        profileImage: user.profileImage,
-        status: user.active ? "Active" : "inactive",
-      })) || []
+      data?.allUsers?.map((user) => ({
+        ...user,
+        status: (user.active ? "Active" : "inactive") as User["status"],
+      })) ?? []
     );
   }, [data]);
 
@@ -146,15 +131,7 @@ const UsersPage = () => {
 
                     {/* STATUS */}
                     <td className="p-4">
-                      <Badge
-                        className={`hover:bg-transparent ${
-                          user.status === "Active"
-                            ? "border-green-200 bg-green-100 text-green-700"
-                            : "border-red-200 bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {user.status}
-                      </Badge>
+                      <StatusBadge status={user.status} />
                     </td>
                   </tr>
                 ))}
