@@ -23,6 +23,7 @@ const ForgotPassword = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(forgotSchema),
@@ -33,31 +34,20 @@ const ForgotPassword = () => {
     try {
       const res = await forgetPassword(data.email).unwrap();
 
-      // store token for next step
       if (res?.token) {
         localStorage.setItem("reset_token", res.token);
       }
-
-      // store email for verify screen
       localStorage.setItem("reset_email", data.email);
-
       setSuccess(true);
     } catch (err: any) {
-      console.log("ERROR:", err);
-      alert(err?.data?.message || "Something went wrong");
+      setError("root", {
+        message: err?.data?.message || "Something went wrong. Please try again.",
+      });
     }
   };
 
   return (
     <div className="h-screen flex flex-col lg:flex-row font-sans bg-gray-100">
-      {/* LEFT IMAGE */}
-      {/* <img
-        src={forgetPassword}
-        alt="forget-password"
-        className="hidden lg:block w-[50%] p-10"
-      /> */}
-
-      {/* RIGHT SIDE */}
       <div className="flex-1 flex flex-col bg-white min-h-screen">
         {/* HEADER */}
         <div className="flex items-center justify-between px-8 pt-6">
@@ -141,6 +131,12 @@ const ForgotPassword = () => {
                     </p>
                   )}
                 </div>
+
+                {errors.root && (
+                  <p className="text-xs text-red-500 text-center">
+                    {errors.root.message}
+                  </p>
+                )}
 
                 {/* BUTTON */}
                 <button

@@ -1,11 +1,8 @@
 import { useMemo } from "react";
+import type { Product } from "@/types/product.types";
 
-export const useFilteredProducts = (products: any[], search: string) => {
+export const useFilteredProducts = (products: Product[]) => {
   return useMemo(() => {
-    return products.filter(
-      (p) =>
-        p.active !== false &&
-        p.title.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [products, search]);
+    return products.filter((p) => p.active !== false);
+  }, [products]);
 };

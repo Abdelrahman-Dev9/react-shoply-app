@@ -4,16 +4,13 @@ import {
   profileSchema,
   type PasswordKey,
   type ProfileFormData,
-} from "@/constant/constant";
-import {
-  useGetAdminByIdQuery,
-  useUpdateProfileMutation,
-} from "@/redux/services/authApi";
+} from "@/constants/profile";
+import { useGetAdminByIdQuery, useUpdateProfileMutation } from "@/redux/services/adminApi";
 import { getAdminId } from "@/utils/auth";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 
@@ -23,12 +20,18 @@ const ProfileAdmin = () => {
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const avatarUrlRef = useRef<string | null>(null);
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-
-  // ✅ EDIT MODE STATE
   const [editableField, setEditableField] = useState<string | null>(null);
+
+  useEffect(() => {
+    const url = avatarUrlRef.current;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, []);
 
   const [show, setShow] = useState<Record<PasswordKey, boolean>>({
     current: false,
@@ -67,13 +70,16 @@ const ProfileAdmin = () => {
     }));
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setAvatar(URL.createObjectURL(file));
+    if (avatarUrlRef.current) URL.revokeObjectURL(avatarUrlRef.current);
+    const url = URL.createObjectURL(file);
+    avatarUrlRef.current = url;
+    setAvatar(url);
     setAvatarFile(file);
-  };
+  }, []);
 
   const onSubmit = async (values: ProfileFormData) => {
     try {
@@ -87,10 +93,9 @@ const ProfileAdmin = () => {
         formData.append("profileImage", avatarFile);
       }
 
-      const res = await updateProfile(formData).unwrap();
-      console.log(res);
+      await updateProfile(formData).unwrap();
     } catch (error) {
-      console.log(error);
+      console.error("Profile update failed:", error);
     }
   };
 

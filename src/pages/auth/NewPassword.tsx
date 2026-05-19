@@ -33,6 +33,7 @@ const NewPassword = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<z.infer<typeof forgotSchema>>({
     resolver: zodResolver(forgotSchema),
@@ -47,12 +48,11 @@ const NewPassword = () => {
       }).unwrap();
 
       localStorage.removeItem("reset_token");
-
       Navigate("/login");
     } catch (err: any) {
-      console.log("RESET ERROR:", err);
-
-      alert(err?.data?.message || "Something went wrong");
+      setError("root", {
+        message: err?.data?.message || "Something went wrong. Please try again.",
+      });
     }
   };
 
@@ -237,13 +237,19 @@ const NewPassword = () => {
                   )}
                 </div>
 
+                {errors.root && (
+                  <p className="text-xs text-red-500 text-center">
+                    {errors.root.message}
+                  </p>
+                )}
+
                 {/* Submit */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="cursor-pointer w-full py-4 bg-[#1e3a6e] hover:bg-[#162e5a] active:bg-[#0f2040] disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold text-base rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.99]"
                 >
-                  {isSubmitting ? "loading..." : "Continue"}
+                  {isSubmitting ? "Loading..." : "Continue"}
                 </button>
               </form>
             )}

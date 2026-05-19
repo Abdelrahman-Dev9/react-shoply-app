@@ -37,6 +37,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,15 +55,13 @@ const Login = () => {
         password: data.password,
       }).unwrap();
 
-      // ✅ SAVE TOKEN FIRST
-      setAdminToken(res.token); // adjust if API uses different key
+      setAdminToken(res.token);
       setAdminId(res.data._id);
-
-      // ✅ THEN NAVIGATE
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      console.log("Login error:", error);
-      alert(error?.data?.message || "Login failed");
+      setError("root", {
+        message: error?.data?.message || "Login failed. Please try again.",
+      });
     }
   };
 
@@ -170,6 +169,12 @@ const Login = () => {
                   Forgot password?
                 </button>
               </div>
+
+              {errors.root && (
+                <p className="text-red-500 text-sm text-center">
+                  {errors.root.message}
+                </p>
+              )}
 
               {/* Submit */}
               <button
