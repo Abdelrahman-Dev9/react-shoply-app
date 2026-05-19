@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Product } from "@/types/product.types";
 import StarRating from "./StarRating";
 
@@ -5,7 +6,7 @@ interface Props {
   product: Product;
 }
 
-const ProductRow = ({ product }: Props) => {
+const ProductRow = memo(({ product }: Props) => {
   return (
     <>
       <td className="px-4 py-3 font-medium text-gray-900">{product.title}</td>
@@ -15,10 +16,10 @@ const ProductRow = ({ product }: Props) => {
           <img
             src={product.imageCover}
             alt={product.title}
-            className="w-12 h-12 rounded object-cover bg-gray-100"
+            className="h-12 w-12 rounded bg-gray-100 object-cover"
           />
         ) : (
-          <div className="w-12 h-12 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded bg-gray-200 text-xs text-gray-400">
             No image
           </div>
         )}
@@ -26,17 +27,17 @@ const ProductRow = ({ product }: Props) => {
 
       <td className="px-4 py-3 text-gray-700">{product.category}</td>
 
-      <td className="py-3 text-center">
-        <span className="inline-block py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+      <td className="px-4 py-3 text-center">
+        <span className="inline-block rounded bg-blue-100 py-1 px-2 text-sm font-medium text-blue-800">
           {product.quantity ?? "-"}
         </span>
       </td>
 
-      <td className="px-4 py-3 text-gray-900 font-medium">
+      <td className="px-4 py-3 font-medium text-gray-900">
         {product.priceAfterDiscount ? `SR ${product.priceAfterDiscount}` : "-"}
       </td>
 
-      <td className="px-4 py-3 text-gray-900 font-medium">
+      <td className="px-4 py-3 font-medium text-gray-900">
         SR {product.price}
       </td>
 
@@ -45,6 +46,8 @@ const ProductRow = ({ product }: Props) => {
       </td>
     </>
   );
-};
+});
+
+ProductRow.displayName = "ProductRow";
 
 export default ProductRow;
