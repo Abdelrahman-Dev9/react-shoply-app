@@ -4,20 +4,16 @@ export const baseApi = createApi({
   reducerPath: "api",
 
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://priceo.vercel.app",
+    baseUrl: import.meta.env.VITE_API_URL,
 
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("adminToken");
-
-      if (token) {
-        headers.set("Authorization", token);
-      }
-
+      if (token) headers.set("Authorization", token);
       return headers;
     },
   }),
 
-  tagTypes: ["Users", "Admins", "Products"],
+  tagTypes: ["Users", "Admins", "Products", "Categories"],
 
   endpoints: () => ({}),
 });
