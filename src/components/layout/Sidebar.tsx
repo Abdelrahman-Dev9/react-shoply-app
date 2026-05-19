@@ -1,4 +1,7 @@
-import { useGetAdminByIdQuery, useGetAdminsQuery } from "@/redux/services/adminApi";
+import {
+  useGetAdminByIdQuery,
+  useGetAdminsQuery,
+} from "@/redux/services/adminApi";
 import { useGetCategoriesQuery } from "@/redux/services/categoryApi";
 import { useGetProductsQuery } from "@/redux/services/productApi";
 import { useGetUsersQuery } from "@/redux/services/userApi";
@@ -17,6 +20,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import { useGetOrdersQuery } from "@/redux/services/ordersApi";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -40,6 +44,7 @@ const Sidebar = ({
   const { data: users } = useGetUsersQuery();
   const { data: products } = useGetProductsQuery();
   const { data: admin } = useGetAdminByIdQuery(adminId || "");
+  const { data: orders } = useGetOrdersQuery({});
 
   const handleLogout = () => {
     if (!window.confirm("Are you sure you want to logout?")) return;
@@ -57,7 +62,12 @@ const Sidebar = ({
       path: "dashboard",
       badge: null,
     },
-    { icon: ClipboardList, label: "Order List", path: "orderList", badge: 5 },
+    {
+      icon: ClipboardList,
+      label: "Order List",
+      path: "orderList",
+      badge: orders?.results || 0,
+    },
     {
       icon: Package,
       label: "Products",
