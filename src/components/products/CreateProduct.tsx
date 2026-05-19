@@ -9,12 +9,8 @@ const createProductSchema = z
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     category: z.string().min(1, "Category is required"),
-    price: z
-      .number({ invalid_type_error: "Price is required" })
-      .positive("Price must be greater than 0"),
-    quantity: z
-      .number({ invalid_type_error: "Quantity is required" })
-      .positive("Quantity must be greater than 0"),
+    price: z.number().positive("Price must be greater than 0"),
+    quantity: z.number().positive("Quantity must be greater than 0"),
     priceAfterDiscount: z.number().optional(),
     imageCover: z
       .instanceof(FileList)
