@@ -3,7 +3,17 @@ import {
   useSendNotificationMutation,
 } from "@/redux/services/notificationApi";
 import { Plus, Search } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+type Notification = {
+  _id: string;
+  subject: string;
+  sendTo: string[];
+  createdAt: string;
+  user?: {
+    name?: string;
+  };
+};
 
 const NotificationPage = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -11,6 +21,7 @@ const NotificationPage = () => {
   const [showModal, setShowModal] = useState(false);
 
   const { data: notificationsData, isLoading } = useGetNotificationsQuery({});
+
   const [sendNotification, { isLoading: isSending }] =
     useSendNotificationMutation();
 
@@ -18,16 +29,27 @@ const NotificationPage = () => {
     subject: "",
     sendTo: "",
   });
+
+  const notifications: Notification[] = notificationsData?.data || [];
+
+  const filteredNotifications = useMemo(() => {
+    return notifications.filter((notification) =>
+      notification.subject.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [notifications, search]);
+
   const createNotification = async () => {
     if (!form.subject.trim()) return;
 
     try {
+      const sendToIds = form.sendTo
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+
       await sendNotification({
         subject: form.subject,
-        sendTo: form.sendTo
-          .split(",")
-          .map((id) => id.trim())
-          .filter(Boolean),
+        sendTo: sendToIds,
       }).unwrap();
 
       setForm({
@@ -37,16 +59,17 @@ const NotificationPage = () => {
 
       setShowModal(false);
     } catch (error) {
-      console.log(error);
+      console.log("Failed to send notification:", error);
     }
   };
+
   return (
     <div className="p-6 bg-[#f0f4ff] min-h-screen">
       <div className="bg-white rounded-2xl p-5 shadow-sm">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <h2 className="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
-            Notifications ({notificationsData?.data?.length})
+            Notifications ({filteredNotifications.length})
           </h2>
 
           {/* Search */}
@@ -78,8 +101,11 @@ const NotificationPage = () => {
             <thead>
               <tr className="text-gray-700 text-sm">
                 <th className="text-left pb-3 pl-2 font-semibold">Subject</th>
+
                 <th className="text-left pb-3 font-semibold">Send by</th>
+
                 <th className="text-left pb-3 font-semibold">Send to</th>
+
                 <th className="text-left pb-3 font-semibold">Send at</th>
               </tr>
             </thead>
@@ -91,22 +117,27 @@ const NotificationPage = () => {
                     Loading...
                   </td>
                 </tr>
-              ) : notificationsData?.data?.length > 0 ? (
-                notificationsData?.data?.map((n) => {
+              ) : filteredNotifications.length > 0 ? (
+                filteredNotifications.map((n: Notification) => {
                   const isActive = n._id === activeId;
 
                   return (
                     <tr
                       key={n._id}
                       onClick={() => setActiveId(n._id)}
-                      className={`border-t cursor-pointer transition
-                      ${isActive ? "bg-blue-100" : "hover:bg-gray-100"}`}
+                      className={`border-t cursor-pointer transition ${
+                        isActive ? "bg-blue-100" : "hover:bg-gray-100"
+                      }`}
                     >
                       <td className="py-3 pr-3">{n.subject}</td>
 
                       <td className="py-3">{n.user?.name || "Admin"}</td>
 
-                      <td className="py-3">{n.sendTo}</td>
+                      <td className="py-3">
+                        {Array.isArray(n.sendTo)
+                          ? n.sendTo.join(", ")
+                          : n.sendTo}
+                      </td>
 
                       <td className="py-3">
                         {new Date(n.createdAt).toLocaleDateString()}
@@ -136,14 +167,25 @@ const NotificationPage = () => {
               <textarea
                 placeholder="Subject"
                 value={form.subject}
-                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    subject: e.target.value,
+                  })
+                }
                 className="w-full border rounded-lg p-2 text-sm min-h-[100px]"
               />
 
               <input
-                placeholder="Send to"
+                type="text"
+                placeholder="Send to IDs separated by commas"
                 value={form.sendTo}
-                onChange={(e) => setForm({ ...form, sendTo: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    sendTo: e.target.value,
+                  })
+                }
                 className="w-full border rounded-lg p-2 text-sm"
               />
             </div>
