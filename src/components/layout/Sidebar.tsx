@@ -21,6 +21,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { useGetOrdersQuery } from "@/redux/services/ordersApi";
+import { useGetNotificationsQuery } from "@/redux/services/notificationApi";
 
 type SidebarProps = {
   sidebarCollapsed: boolean;
@@ -45,6 +46,7 @@ const Sidebar = ({
   const { data: products } = useGetProductsQuery();
   const { data: admin } = useGetAdminByIdQuery(adminId || "");
   const { data: orders } = useGetOrdersQuery({});
+  const { data: notification } = useGetNotificationsQuery({});
 
   const handleLogout = () => {
     if (!window.confirm("Are you sure you want to logout?")) return;
@@ -92,7 +94,12 @@ const Sidebar = ({
       path: "categories",
       badge: categories?.results || 0,
     },
-    { icon: Bell, label: "Notifications", path: "notifications", badge: 3 },
+    {
+      icon: Bell,
+      label: "Notifications",
+      path: "notifications",
+      badge: notification?.data?.length || 0,
+    },
     { icon: BarChart2, label: "Reports", path: "reports", badge: null },
   ];
 

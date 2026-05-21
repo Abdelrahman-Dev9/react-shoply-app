@@ -1,83 +1,58 @@
+import {
+  useGetNotificationsQuery,
+  useSendNotificationMutation,
+} from "@/redux/services/notificationApi";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
 
-const initialNotifications = [
-  {
-    id: 1,
-    subject:
-      "Please note that the Wanette car will no longer be available after October 30, 2024.",
-    sendBy: "Ahmed Mohamed",
-    sendTo: "(+20) 123 45678910",
-    sendAt: "2024-10-30",
-  },
-  {
-    id: 2,
-    subject: "System maintenance scheduled for next Friday. Expect downtime.",
-    sendBy: "Admin",
-    sendTo: "(+20) 987 65432100",
-    sendAt: "2024-10-25",
-  },
-  {
-    id: 3,
-    subject: "New features have been added to your dashboard.",
-    sendBy: "Support Team",
-    sendTo: "(+20) 111 22233344",
-    sendAt: "2024-10-20",
-  },
-];
-
-export default function NotificationPage() {
-  const [notifications, setNotifications] = useState(initialNotifications);
-  const [activeId, setActiveId] = useState<number | null>(null);
+const NotificationPage = () => {
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
 
+  const { data: notificationsData, isLoading } = useGetNotificationsQuery({});
+  const [sendNotification, { isLoading: isSending }] =
+    useSendNotificationMutation();
+
   const [form, setForm] = useState({
     subject: "",
-    sendBy: "",
     sendTo: "",
-    sendAt: "",
   });
-
-  const createNotification = () => {
+  const createNotification = async () => {
     if (!form.subject.trim()) return;
 
-    const newNotification = {
-      id: Date.now(),
-      subject: form.subject,
-      sendBy: form.sendBy || "Admin",
-      sendTo: form.sendTo || "All",
-      sendAt: form.sendAt || new Date().toISOString().split("T")[0],
-    };
+    try {
+      await sendNotification({
+        subject: form.subject,
+        sendTo: form.sendTo
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean),
+      }).unwrap();
 
-    setNotifications((prev) => [newNotification, ...prev]);
+      setForm({
+        subject: "",
+        sendTo: "",
+      });
 
-    setForm({
-      subject: "",
-      sendBy: "",
-      sendTo: "",
-      sendAt: "",
-    });
-
-    setShowModal(false);
+      setShowModal(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  const filteredNotifications = notifications.filter((n) =>
-    n.subject.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div className="p-6 bg-[#f0f4ff] min-h-screen">
       <div className="bg-white rounded-2xl p-5 shadow-sm">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <h2 className="text-[#1e3a8a] font-bold text-xl whitespace-nowrap">
-            Notifications ({notifications.length})
+            Notifications ({notificationsData?.data?.length})
           </h2>
 
           {/* Search */}
           <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 bg-white flex-1">
             <Search size={14} className="text-gray-400" />
+
             <input
               type="text"
               placeholder="Search notifications..."
@@ -110,21 +85,32 @@ export default function NotificationPage() {
             </thead>
 
             <tbody>
-              {filteredNotifications.length > 0 ? (
-                filteredNotifications.map((n) => {
-                  const isActive = n.id === activeId;
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-6 text-gray-400">
+                    Loading...
+                  </td>
+                </tr>
+              ) : notificationsData?.data?.length > 0 ? (
+                notificationsData?.data?.map((n) => {
+                  const isActive = n._id === activeId;
 
                   return (
                     <tr
-                      key={n.id}
-                      onClick={() => setActiveId(n.id)}
+                      key={n._id}
+                      onClick={() => setActiveId(n._id)}
                       className={`border-t cursor-pointer transition
                       ${isActive ? "bg-blue-100" : "hover:bg-gray-100"}`}
                     >
                       <td className="py-3 pr-3">{n.subject}</td>
-                      <td className="py-3">{n.sendBy}</td>
+
+                      <td className="py-3">{n.user?.name || "Admin"}</td>
+
                       <td className="py-3">{n.sendTo}</td>
-                      <td className="py-3">{n.sendAt}</td>
+
+                      <td className="py-3">
+                        {new Date(n.createdAt).toLocaleDateString()}
+                      </td>
                     </tr>
                   );
                 })
@@ -142,7 +128,7 @@ export default function NotificationPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Create Notification</h3>
 
@@ -151,27 +137,13 @@ export default function NotificationPage() {
                 placeholder="Subject"
                 value={form.subject}
                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                className="w-full border rounded-lg p-2 text-sm"
-              />
-
-              <input
-                placeholder="Send by"
-                value={form.sendBy}
-                onChange={(e) => setForm({ ...form, sendBy: e.target.value })}
-                className="w-full border rounded-lg p-2 text-sm"
+                className="w-full border rounded-lg p-2 text-sm min-h-[100px]"
               />
 
               <input
                 placeholder="Send to"
                 value={form.sendTo}
                 onChange={(e) => setForm({ ...form, sendTo: e.target.value })}
-                className="w-full border rounded-lg p-2 text-sm"
-              />
-
-              <input
-                type="date"
-                value={form.sendAt}
-                onChange={(e) => setForm({ ...form, sendAt: e.target.value })}
                 className="w-full border rounded-lg p-2 text-sm"
               />
             </div>
@@ -183,11 +155,13 @@ export default function NotificationPage() {
               >
                 Cancel
               </button>
+
               <button
                 onClick={createNotification}
-                className="px-4 py-2 text-sm bg-[#1e3a8a] text-white rounded-lg"
+                disabled={isSending}
+                className="px-4 py-2 text-sm bg-[#1e3a8a] text-white rounded-lg disabled:opacity-50"
               >
-                Save
+                {isSending ? "Sending..." : "Save"}
               </button>
             </div>
           </div>
@@ -195,4 +169,6 @@ export default function NotificationPage() {
       )}
     </div>
   );
-}
+};
+
+export default NotificationPage;
