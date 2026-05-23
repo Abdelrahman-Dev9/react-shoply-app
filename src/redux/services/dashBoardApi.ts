@@ -20,6 +20,37 @@ export const statisticsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Taxes"],
     }),
+    getCoupons: builder.query({
+      query: () => ({
+        url: "/coupon",
+        method: "GET",
+      }),
+      providesTags: ["Coupons"],
+    }),
+    createCoupon: builder.mutation({
+      query: (couponData) => ({
+        url: "/coupon",
+        method: "POST",
+        body: couponData,
+      }),
+      invalidatesTags: ["Coupons"],
+    }),
+    updateCoupon: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/coupon/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Coupons"],
+    }),
+
+    deleteCoupon: builder.mutation({
+      query: (id) => ({
+        url: `/coupon/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Coupons"],
+    }),
   }),
 });
 
@@ -27,4 +58,8 @@ export const {
   useGetStatisticsQuery,
   useGetTaxesQuery,
   useUpdateTaxesMutation,
+  useGetCouponsQuery,
+  useCreateCouponMutation,
+  useUpdateCouponMutation,
+  useDeleteCouponMutation,
 } = statisticsApi;

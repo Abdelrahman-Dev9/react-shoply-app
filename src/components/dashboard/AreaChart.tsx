@@ -26,6 +26,7 @@ import {
   YAxis,
 } from "recharts";
 import { z } from "zod";
+import PromoCodePage from "./PromoCode";
 
 const taxSchema = z.object({
   shippingPrice: z.number().min(0),
@@ -231,6 +232,7 @@ const ChartAreaDefault = () => {
           </form>
         </DialogContent>
       </Dialog>
+      <PromoCodePage />
     </div>
   );
 };
