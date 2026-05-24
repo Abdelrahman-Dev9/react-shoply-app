@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGetCouponsQuery } from "@/redux/services/dashBoardApi";
 import { useState } from "react";
 import AddCouponDialog from "./AddCoupon";
+import CouponActionDialog from "./CouponActionDialog";
 
 interface Coupon {
   _id: string;
@@ -17,6 +18,9 @@ interface Coupon {
 const PromoCodePage = () => {
   const { data, isLoading } = useGetCouponsQuery({});
   const [open, setOpen] = useState(false);
+  const [actionOpen, setActionOpen] = useState(false);
+
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   const coupons = data?.data || [];
 
@@ -52,8 +56,12 @@ const PromoCodePage = () => {
           <div className="divide-y divide-gray-100">
             {coupons.map((item: Coupon) => (
               <div
+                onClick={() => {
+                  setSelectedCoupon(item);
+                  setActionOpen(true);
+                }}
                 key={item._id}
-                className="grid grid-cols-6 items-center py-6 text-sm text-[#6B7280]"
+                className="grid grid-cols-6 items-center py-6 text-sm text-[#6B7280] cursor-pointer hover:bg-gray-50"
               >
                 <p className="font-medium text-[#374151]">{item.name}</p>
                 <p>{new Date(item.createdAt).toLocaleDateString()}</p>
@@ -73,6 +81,11 @@ const PromoCodePage = () => {
 
       {/* MODAL */}
       <AddCouponDialog open={open} setOpen={setOpen} />
+      <CouponActionDialog
+        open={actionOpen}
+        setOpen={setActionOpen}
+        coupon={selectedCoupon}
+      />
     </>
   );
 };
