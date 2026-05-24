@@ -14,12 +14,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { z } from "zod";
+import { Calendar, Pencil, Ban } from "lucide-react";
 
 const editCouponSchema = z.object({
   name: z.string().min(1, "Name is required"),
-
+  startDate: z.string().optional(),
   expire: z.string().min(1, "Expire date is required"),
-
   discount: z
     .number()
     .min(1, "Discount must be greater than 0")
@@ -53,9 +53,9 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
 
   const form = useForm<EditCouponValues>({
     resolver: zodResolver(editCouponSchema),
-
     defaultValues: {
       name: "",
+      startDate: "",
       expire: "",
       discount: 0,
     },
@@ -65,6 +65,7 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
     if (coupon) {
       form.reset({
         name: coupon.name,
+        startDate: "",
         expire: coupon.expire,
         discount: coupon.discount,
       });
@@ -76,9 +77,6 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
   const handleDelete = async () => {
     try {
       await deleteCoupon(coupon._id).unwrap();
-
-      console.log("Deleted Successfully");
-
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -89,11 +87,12 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
     try {
       await updateCoupon({
         id: coupon._id,
-        body: data,
+        body: {
+          name: data.name,
+          expire: data.expire,
+          discount: data.discount,
+        },
       }).unwrap();
-
-      console.log("Updated Successfully");
-
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -102,18 +101,26 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[450px] rounded-2xl p-6">
+      <DialogContent className="sm:max-w-[640px] rounded-2xl p-8">
         <DialogHeader>
-          <DialogTitle className="text-center font-bold text-[#1e3a8a]">
-            Edit Coupon
+          <DialogTitle className="text-center text-2xl font-bold text-[#1e3a8a]">
+            Edit promocode
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 mt-4">
           {/* NAME */}
           <div>
-            <Input placeholder="Coupon Name" {...form.register("name")} />
-
+            <div className="flex items-center border rounded-xl px-4 py-3 gap-2">
+              <span className="font-semibold text-[#1e3a8a] whitespace-nowrap">
+                Name:
+              </span>
+              <Input
+                placeholder="Coupon name"
+                {...form.register("name")}
+                className="border-0 p-0 focus-visible:ring-0 shadow-none h-auto"
+              />
+            </div>
             {form.formState.errors.name && (
               <p className="mt-1 text-sm text-red-500">
                 {form.formState.errors.name.message}
@@ -121,27 +128,61 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
             )}
           </div>
 
-          {/* EXPIRE */}
-          <div>
-            <Input placeholder="Expire Date" {...form.register("expire")} />
+          {/* DATES */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* START DATE */}
+            <div>
+              <div className="flex items-center justify-between border rounded-xl px-4 py-3 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-semibold whitespace-nowrap">
+                    Start date:
+                  </span>
+                  <Input
+                    type="date"
+                    {...form.register("startDate")}
+                    className="border-0 p-0 focus-visible:ring-0 shadow-none h-auto w-full"
+                  />
+                </div>
+                <Calendar className="text-[#1e3a8a] w-5 h-5 flex-shrink-0" />
+              </div>
+            </div>
 
-            {form.formState.errors.expire && (
-              <p className="mt-1 text-sm text-red-500">
-                {form.formState.errors.expire.message}
-              </p>
-            )}
+            {/* END DATE */}
+            <div>
+              <div className="flex items-center justify-between border rounded-xl px-4 py-3 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-semibold whitespace-nowrap">
+                    End date:
+                  </span>
+                  <Input
+                    type="date"
+                    {...form.register("expire")}
+                    className="border-0 p-0 focus-visible:ring-0 shadow-none h-auto w-full"
+                  />
+                </div>
+                <Calendar className="text-[#1e3a8a] w-5 h-5 flex-shrink-0" />
+              </div>
+              {form.formState.errors.expire && (
+                <p className="mt-1 text-sm text-red-500">
+                  {form.formState.errors.expire.message}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* DISCOUNT */}
           <div>
-            <Input
-              type="number"
-              placeholder="Discount"
-              {...form.register("discount", {
-                valueAsNumber: true,
-              })}
-            />
-
+            <div className="flex items-center border rounded-xl px-4 py-3 gap-2">
+              <span className="font-semibold whitespace-nowrap">
+                Discount amount:
+              </span>
+              <Input
+                type="number"
+                placeholder="EX: 100 %"
+                {...form.register("discount", { valueAsNumber: true })}
+                className="border-0 p-0 focus-visible:ring-0 shadow-none h-auto"
+              />
+            </div>
             {form.formState.errors.discount && (
               <p className="mt-1 text-sm text-red-500">
                 {form.formState.errors.discount.message}
@@ -149,24 +190,28 @@ const CouponActionDialog = ({ open, setOpen, coupon }: Props) => {
             )}
           </div>
 
-          {/* UPDATE BUTTON */}
-          <Button
-            type="submit"
-            disabled={updateLoading}
-            className="w-full bg-[#1e3a8a] hover:bg-[#1a3275]"
-          >
-            {updateLoading ? "Updating..." : "Update Coupon"}
-          </Button>
+          {/* BUTTONS */}
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={deleteLoading}
+              onClick={handleDelete}
+              className="rounded-2xl border-[#1e3a8a] text-[#1e3a8a] hover:bg-[#1e3a8a]/5 py-6 text-base"
+            >
+              <Ban className="w-4 h-4 mr-2" />
+              {deleteLoading ? "Deleting..." : "Delete promocode"}
+            </Button>
 
-          {/* DELETE BUTTON */}
-          <Button
-            type="button"
-            disabled={deleteLoading}
-            onClick={handleDelete}
-            className="w-full bg-red-600 hover:bg-red-700"
-          >
-            {deleteLoading ? "Deleting..." : "Delete Coupon"}
-          </Button>
+            <Button
+              type="submit"
+              disabled={updateLoading}
+              className="rounded-2xl bg-[#1e3a8a] hover:bg-[#1a3275] text-white py-6 text-base"
+            >
+              <Pencil className="w-4 h-4 mr-2" />
+              {updateLoading ? "Updating..." : "Edit promocode"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
