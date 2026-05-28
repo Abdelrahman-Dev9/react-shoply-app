@@ -5,11 +5,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCreateCouponMutation } from "@/redux/services/dashBoardApi";
-import { Calendar, ChevronUp, RefreshCw } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronUp, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const couponSchema = z.object({
   name: z.string().min(3, "Coupon name is required"),
