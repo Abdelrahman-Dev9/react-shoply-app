@@ -12,15 +12,31 @@ const DashboardHome = () => {
 
         <StatsGrid />
 
-        <div className="flex justify-between mt-6">
+        <div className="flex items-center justify-between mt-6">
           <h3 className="text-xl font-semibold text-[#1E3A8A]">
-            Shipment statistic
+            Orders statistic
           </h3>
 
-          <button className="flex items-center gap-1 text-xs text-[#1e3a8a] border px-3 py-1.5 rounded-lg">
-            <ChevronDown size={12} />
-            2024
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-[15px] font-semibold text-[#1E3A8A]">
+                Total Orders
+              </span>
+              <div className="w-10 h-6 rounded-full border-2 border-[#c7d2fe] bg-[#c7d2fe]" />
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-[15px] font-semibold text-[#1E3A8A]">
+                Completed
+              </span>
+              <div className="w-10 h-6 rounded-full border-2 border-[#1e3a8a] bg-[#1e3a8a]" />
+            </div>
+
+            <button className="flex items-center gap-1 text-xs text-[#1e3a8a] border px-3 py-1.5 rounded-lg">
+              <ChevronDown size={12} />
+              2024
+            </button>
+          </div>
         </div>
 
         <BarChartComponent />

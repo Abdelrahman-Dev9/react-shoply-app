@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
+  useGetStatisticsQuery,
   useGetTaxesQuery,
   useUpdateTaxesMutation,
 } from "@/redux/services/dashBoardApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Pencil } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, Loader2, Pencil } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Area,
@@ -35,22 +36,7 @@ const taxSchema = z.object({
 
 type TaxForm = z.infer<typeof taxSchema>;
 
-const incomeData = [
-  { month: "January", value: 186 },
-  { month: "February", value: 305 },
-  { month: "March", value: 237 },
-  { month: "April", value: 73 },
-  { month: "May", value: 209 },
-  { month: "June", value: 214 },
-];
-
-interface TooltipProps {
-  active?: boolean;
-  payload?: { value: number }[];
-  label?: string;
-}
-
-const CustomAreaTooltip = ({ active, payload, label }: TooltipProps) => {
+const CustomAreaTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
       <div className="rounded-lg bg-white p-2 shadow-md text-sm">
@@ -59,7 +45,6 @@ const CustomAreaTooltip = ({ active, payload, label }: TooltipProps) => {
       </div>
     );
   }
-
   return null;
 };
 
@@ -68,6 +53,8 @@ const ChartAreaDefault = () => {
   const [updateTaxes] = useUpdateTaxesMutation();
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const { data: dataStatistics } = useGetStatisticsQuery({});
 
   const taxData = data?.data;
 
@@ -79,7 +66,6 @@ const ChartAreaDefault = () => {
     },
   });
 
-  /* OPEN MODAL */
   const handleOpenEdit = () => {
     form.reset({
       shippingPrice: taxData?.shippingPrice ?? 0,
@@ -89,7 +75,6 @@ const ChartAreaDefault = () => {
     setOpen(true);
   };
 
-  /* SUBMIT */
   const onSubmit = async (values: TaxForm) => {
     try {
       setIsSaving(true);
@@ -97,13 +82,31 @@ const ChartAreaDefault = () => {
       setOpen(false);
     } catch (err) {
       console.log("Update failed:", err);
+    } finally {
       setIsSaving(false);
     }
   };
 
+  // ✅ FIX: safe access + chart transformation
+  const chartData = useMemo(() => {
+    const stats = dataStatistics?.data;
+
+    if (!stats) return [];
+
+    const yearData = stats[2026];
+
+    if (!yearData) return [];
+
+    return Object.entries(yearData).map(([month, value]: any) => ({
+      month: value?.monthName ?? month,
+      value: value?.totalSales ?? 0,
+    }));
+  }, [dataStatistics]);
+
+  console.log("statistics:", dataStatistics);
+
   return (
     <div className="space-y-6">
-      {/* Chart */}
       <Card className="rounded-3xl bg-white p-6 shadow-sm">
         <div>
           <h2 className="mb-4 text-[22px] font-bold text-[#1E3A8A]">
@@ -119,14 +122,20 @@ const ChartAreaDefault = () => {
                     Shipping price
                   </h3>
 
-                  <p className="mt-3 text-[22px] font-bold text-[#3E325C]">
-                    {isLoading ? "Loading..." : taxData?.shippingPrice}
-                  </p>
+                  <div className="mt-3 h-[32px] flex items-center">
+                    {isLoading ? (
+                      <Loader2 className="w-6 h-6 animate-spin " />
+                    ) : (
+                      <p className="text-[22px] font-bold text-[#3E325C]">
+                        {taxData?.shippingPrice}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <button
                   onClick={handleOpenEdit}
-                  className="cursor-pointer mt-8 flex items-center justify-center gap-2 rounded-full bg-[#0BA8FF] py-2.5 text-white"
+                  className="mt-8 flex items-center justify-center gap-2 rounded-full bg-[#0BA8FF] py-2.5 text-white"
                 >
                   <Pencil size={16} />
                   Edit
@@ -142,14 +151,20 @@ const ChartAreaDefault = () => {
                     Tax price
                   </h3>
 
-                  <p className="mt-3 text-[22px] font-bold text-[#3E325C]">
-                    {isLoading ? "Loading..." : taxData?.taxPrice}
-                  </p>
+                  <div className="mt-3 h-[32px] flex items-center">
+                    {isLoading ? (
+                      <Loader2 className="w-6 h-6 animate-spin " />
+                    ) : (
+                      <p className="text-[22px] font-bold text-[#3E325C]">
+                        {taxData?.taxPrice}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <button
                   onClick={handleOpenEdit}
-                  className="cursor-pointer mt-8 flex items-center justify-center gap-2 rounded-full bg-[#0BA8FF] py-2.5 text-white"
+                  className="mt-8 flex items-center justify-center gap-2 rounded-full bg-[#0BA8FF] py-2.5 text-white"
                 >
                   <Pencil size={16} />
                   Edit
@@ -160,44 +175,55 @@ const ChartAreaDefault = () => {
         </div>
 
         {/* Chart */}
-        <div className="mb-5 flex items-center justify-between">
-          <h3 className="text-2xl font-bold text-[#1e3a8a]">
-            Income statistics
-          </h3>
+        <div className="mt-8">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-2xl font-bold text-[#1e3a8a]">
+              Income statistics
+            </h3>
 
-          <button className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-[#1e3a8a]">
-            <ChevronDown size={15} />
-            2024 Year
-          </button>
+            <button className="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold text-[#1e3a8a]">
+              <ChevronDown size={15} />
+              2026 Year
+            </button>
+          </div>
+
+          <CardContent className="relative p-0">
+            {isLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-[1px]">
+                <Loader2 className="w-8 h-8 animate-spin " />
+              </div>
+            )}
+
+            <ResponsiveContainer width="100%" height={320}>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#1e3a8a" stopOpacity={0.4} />
+                    <stop
+                      offset="100%"
+                      stopColor="#1e3a8a"
+                      stopOpacity={0.08}
+                    />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid vertical={false} stroke="#e5e7eb" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomAreaTooltip />} />
+
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#1e3a8a"
+                  strokeWidth={3}
+                  fill="url(#incomeGrad)"
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
         </div>
-
-        <CardContent className="p-0">
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={incomeData}>
-              <defs>
-                <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1e3a8a" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#1e3a8a" stopOpacity={0.08} />
-                </linearGradient>
-              </defs>
-
-              <CartesianGrid vertical={false} stroke="#e5e7eb" />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} domain={[0, 550]} />
-
-              <Tooltip content={<CustomAreaTooltip />} />
-
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="#1e3a8a"
-                strokeWidth={3}
-                fill="url(#incomeGrad)"
-                dot={false}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
       </Card>
 
       {/* MODAL */}
@@ -211,27 +237,28 @@ const ChartAreaDefault = () => {
             <Input
               type="number"
               placeholder="Shipping Price"
-              {...form.register("shippingPrice", {
-                valueAsNumber: true,
-              })}
+              {...form.register("shippingPrice", { valueAsNumber: true })}
             />
 
             <Input
               type="number"
               placeholder="Tax Price"
-              {...form.register("taxPrice", {
-                valueAsNumber: true,
-              })}
+              {...form.register("taxPrice", { valueAsNumber: true })}
             />
 
             <DialogFooter>
               <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
       <PromoCodePage />
     </div>
   );

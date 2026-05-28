@@ -108,7 +108,6 @@ const AddCouponDialog = ({ open, setOpen }: Props) => {
                 className="w-full min-w-0 border-none bg-transparent text-sm text-gray-500 outline-none"
                 {...form.register("startDate")}
               />
-              <Calendar className="h-5 w-5 text-[#1e3a8a] shrink-0" />
             </div>
 
             <div className="flex items-center gap-3 rounded-[14px] border border-gray-200 px-5 py-4">
@@ -120,7 +119,6 @@ const AddCouponDialog = ({ open, setOpen }: Props) => {
                 className="w-full min-w-0 border-none bg-transparent text-sm text-gray-500 outline-none"
                 {...form.register("expire")}
               />
-              <Calendar className="h-5 w-5 text-[#1e3a8a] shrink-0" />
             </div>
           </div>
 

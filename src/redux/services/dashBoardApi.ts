@@ -51,6 +51,13 @@ export const statisticsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Coupons"],
     }),
+    getOrdersStats: builder.query({
+      query: () => ({
+        url: "/admin/ordersStats",
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
@@ -62,4 +69,5 @@ export const {
   useCreateCouponMutation,
   useUpdateCouponMutation,
   useDeleteCouponMutation,
+  useGetOrdersStatsQuery,
 } = statisticsApi;
