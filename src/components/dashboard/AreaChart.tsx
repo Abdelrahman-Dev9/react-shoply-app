@@ -103,8 +103,6 @@ const ChartAreaDefault = () => {
     }));
   }, [dataStatistics]);
 
-  console.log("statistics:", dataStatistics);
-
   return (
     <div className="space-y-6">
       <Card className="rounded-3xl bg-white p-6 shadow-sm">

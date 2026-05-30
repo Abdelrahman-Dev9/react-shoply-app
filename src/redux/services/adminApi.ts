@@ -16,6 +16,15 @@ export const adminApi = baseApi.injectEndpoints({
         method: "PUT",
         body: formData,
       }),
+      invalidatesTags: ["Admins"],
+    }),
+
+    updatePassword: builder.mutation({
+      query: (body) => ({
+        url: "/admin/password",
+        method: "PUT",
+        body,
+      }),
     }),
 
     getAdmins: builder.query<AdminsResponse, void>({
@@ -34,12 +43,10 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["Admins"],
     }),
 
-    addAdmin: builder.mutation<void, {
-      name: string;
-      email: string;
-      password: string;
-      phone: string;
-    }>({
+    addAdmin: builder.mutation<
+      void,
+      { name: string; email: string; password: string; phone: string }
+    >({
       query: (body) => ({
         url: "/admin/addAdmin",
         method: "POST",
@@ -70,6 +77,7 @@ export const adminApi = baseApi.injectEndpoints({
 export const {
   useGetProfileQuery,
   useUpdateProfileMutation,
+  useUpdatePasswordMutation,
   useGetAdminsQuery,
   useGetAdminByIdQuery,
   useAddAdminMutation,
