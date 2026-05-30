@@ -21,7 +21,21 @@ export const ordersApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    payOrder: builder.mutation({
+      query: (id) => ({ url: `/order/${id}/pay`, method: "PUT" }),
+      invalidatesTags: ["Orders"],
+    }),
+
+    deliverOrder: builder.mutation({
+      query: (id) => ({ url: `/order/${id}/deliver`, method: "PUT" }),
+      invalidatesTags: ["Orders"],
+    }),
   }),
 });
 
-export const { useGetOrdersQuery, useGetOrderByIdQuery } = ordersApi;
+export const {
+  useGetOrdersQuery,
+  useGetOrderByIdQuery,
+  usePayOrderMutation,
+  useDeliverOrderMutation,
+} = ordersApi;

@@ -1,4 +1,10 @@
-import { CalendarDays, ChevronDown } from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+// ─── Types ───────────────────────────────────────
 
 export type CartItem = {
   _id: string;
@@ -39,229 +45,212 @@ export type Order = {
   shippingPostalCode: string;
 };
 
-// ─── Reusable sub-components ────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────
 
-const InfoBox = ({
-  label,
-  value,
-  className = "",
-}: {
-  label: string;
-  value: string | number | React.ReactNode;
-  className?: string;
-}) => (
-  <div
-    className={`border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-1 text-sm ${className}`}
-  >
+const computeStatus = (paid: boolean, delivered: boolean): Order["status"] => {
+  if (paid && delivered) return "Completed";
+  if (!paid && !delivered) return "Active";
+  return "Pending";
+};
+
+const statusClass: Record<string, string> = {
+  Active: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50",
+  Pending: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50",
+  Completed: "bg-green-50 text-green-700 border-green-200 hover:bg-green-50",
+};
+
+const formatDate = (d?: string) =>
+  d
+    ? new Date(d).toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      })
+    : "—";
+
+// ─── Small UI pieces ───────────────────────────────────────
+
+const Field = ({ label, value }: { label: string; value: React.ReactNode }) => (
+  <div className="flex items-center gap-2 text-sm border border-gray-200 rounded-xl px-4 py-3">
     <span className="font-semibold text-gray-800 shrink-0">{label}:</span>
-    <span className="text-gray-700 truncate">{value}</span>
+    <span className="text-gray-600 truncate">{value}</span>
   </div>
 );
 
-const BoolBox = ({ label, value }: { label: string; value: boolean }) => (
-  <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
-    <span>
+const DateField = ({ label, value }: { label: string; value?: string }) => (
+  <div className="flex items-center justify-between text-sm border border-gray-200 rounded-xl px-4 py-3">
+    <div>
       <span className="font-semibold text-gray-800">{label}: </span>
-      <span className="text-[#1e3a8a] font-semibold">
-        {value ? "True" : "False"}
-      </span>
-    </span>
-    <button className="w-8 h-8 bg-[#1e3a8a] rounded-lg flex items-center justify-center shrink-0">
-      <ChevronDown size={16} className="text-white" />
-    </button>
-  </div>
-);
-
-const DateBox = ({ label, value }: { label: string; value: string }) => (
-  <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
-    <span>
-      <span className="font-semibold text-gray-800">{label}: </span>
-      <span className="text-gray-700">
-        {value
-          ? new Date(value).toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "numeric",
-            })
-          : " "}
-      </span>
-    </span>
+      <span className="text-gray-600">{formatDate(value)}</span>
+    </div>
     <div className="w-8 h-8 bg-[#1e3a8a] rounded-lg flex items-center justify-center shrink-0">
       <CalendarDays size={15} className="text-white" />
     </div>
   </div>
 );
 
-const getStatusStyle = (status: string) => {
-  if (status === "Completed") return "border border-green-500 text-green-600";
-  if (status === "Active") return "border border-[#1e3a8a] text-[#1e3a8a]";
-  return "border border-gray-400 text-gray-600";
-};
+const ToggleDropdown = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) => (
+  <div className="border border-gray-200 rounded-xl px-4 py-3 text-sm flex justify-between items-center">
+    <span>
+      <span className="font-semibold text-gray-800">{label}: </span>
+      <span className={value ? "text-green-600" : "text-red-500"}>
+        {value ? "True" : "False"}
+      </span>
+    </span>
+    {!value && (
+      <Button
+        size="sm"
+        onClick={() => onChange(true)}
+        className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 h-7 text-xs px-3"
+      >
+        Mark True
+      </Button>
+    )}
+  </div>
+);
 
-// ─── Main component ──────────────────────────────────────────────────────────
+// ─── Main Component ───────────────────────────────────────
 
-const OrderDetail = ({ order }: { order: Order }) => {
+const OrderDetail = ({
+  order,
+  onUpdate,
+}: {
+  order: Order;
+  onUpdate: (data: Partial<Order>) => void;
+}) => {
+  const status = computeStatus(order.isPaid, order.isDelivered);
+
   return (
-    <div className="flex-1 bg-white rounded-2xl overflow-y-auto shadow-sm">
-      <div className="p-6 space-y-4">
-        {/* Header */}
+    <Card className="flex-1 overflow-y-auto rounded-2xl shadow-sm">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-[#1e3a8a] font-semibold text-base">
+          <CardTitle className="text-[#1e3a8a] text-base font-semibold">
             Order ID: #{order.id}
-          </h2>
-          <span
-            className={`text-sm px-5 py-1.5 rounded-full bg-white font-medium ${getStatusStyle(
-              order.status
-            )}`}
-          >
-            {order.status}
-          </span>
+          </CardTitle>
+          <Badge className={statusClass[status]}>{status}</Badge>
         </div>
+      </CardHeader>
 
-        {/* Tax Price / Shipping Price */}
+      <CardContent className="space-y-4">
+        {/* Prices */}
         <div className="grid grid-cols-2 gap-3">
-          <InfoBox label="Tax Price" value={`${order.taxPrice} $`} />
-          <InfoBox label="Shipping Price" value={`${order.shippingPrice} $`} />
-        </div>
-
-        {/* Total Order Price / Payment Method */}
-        <div className="grid grid-cols-2 gap-3">
-          <InfoBox
-            label="Total Order Price"
-            value={`${order.totalOrderPrice} $`}
-          />
-          <InfoBox
-            label="Payment Method Type"
+          <Field label="Tax Price" value={`${order.taxPrice} $`} />
+          <Field label="Shipping" value={`${order.shippingPrice} $`} />
+          <Field label="Total" value={`${order.totalOrderPrice} $`} />
+          <Field
+            label="Payment"
             value={
               <span className="capitalize">{order.paymentMethodType}</span>
             }
           />
         </div>
 
-        {/* Paid + Paid At */}
+        {/* Paid / Delivered */}
         <div className="grid grid-cols-2 gap-3">
-          <BoolBox label="Paid" value={order.isPaid} />
-          <DateBox label="Paid At" value={order.paidAt} />
+          <ToggleDropdown
+            label="Paid"
+            value={order.isPaid}
+            onChange={(v) => onUpdate({ isPaid: v })}
+          />
+          <DateField label="Paid At" value={order.paidAt} />
         </div>
 
-        {/* Delivered + Delivered At */}
         <div className="grid grid-cols-2 gap-3">
-          <BoolBox label="Delivered" value={order.isDelivered} />
-          <DateBox label="Delivered At" value={order.deliveredAt} />
+          <ToggleDropdown
+            label="Delivered"
+            value={order.isDelivered}
+            onChange={(v) => onUpdate({ isDelivered: v })}
+          />
+          <DateField label="Delivered At" value={order.deliveredAt} />
         </div>
 
         {/* Address */}
-        <InfoBox label="Address" value={order.address} />
-
-        {/* Shipping details */}
+        <Field label="Address" value={order.address} />
         <div className="grid grid-cols-3 gap-3">
-          <InfoBox label="Phone" value={order.shippingPhone} />
-          <InfoBox label="City" value={order.shippingCity} />
-          <InfoBox label="Postal Code" value={order.shippingPostalCode} />
+          <Field label="Phone" value={order.shippingPhone} />
+          <Field label="City" value={order.shippingCity} />
+          <Field label="Postal" value={order.shippingPostalCode} />
         </div>
 
-        {/* Customer Data */}
-        <div className="border border-gray-200 rounded-2xl p-4">
-          <h3 className="text-[#1e3a8a] font-semibold text-sm mb-3">
-            Customer Data
-          </h3>
-          <div className="flex gap-4">
-            {/* Avatar */}
-            <div className="w-36 h-36 shrink-0 border border-gray-200 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-              {order.customer.image ? (
-                <img
-                  src={order.customer.image}
-                  alt={order.customer.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-4xl font-bold text-gray-300">
-                  {order.customer.name?.[0]?.toUpperCase() || "?"}
-                </span>
-              )}
-            </div>
-
-            {/* Fields */}
-            <div className="flex-1 space-y-2">
-              <InfoBox label="Customer Name" value={order.customer.name} />
-              <div className="grid grid-cols-2 gap-2">
-                <InfoBox
-                  label="Gender"
-                  value={
-                    <span className="capitalize">{order.customer.gender}</span>
-                  }
-                />
-                <InfoBox
-                  label="Birthday"
-                  value={
-                    order.customer.birthday
-                      ? new Date(order.customer.birthday).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "2-digit",
-                            day: "2-digit",
-                            year: "numeric",
-                          }
-                        )
-                      : " "
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <InfoBox label="Mobile" value={order.customer.mobile || " "} />
-                <InfoBox label="Email" value={order.customer.email || " "} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Products   one card per cart item */}
-        {order.cartItems.map((item, idx) => (
-          <div
-            key={item._id}
-            className="border border-gray-200 rounded-2xl p-4"
-          >
-            <h3 className="text-[#1e3a8a] font-semibold text-sm mb-3">
-              Product {idx + 1}
-            </h3>
+        {/* Customer */}
+        <Card className="rounded-2xl shadow-none">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-[#1e3a8a] text-sm">
+              Customer Data
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="flex gap-4">
-              {/* Image */}
-              <div className="w-36 h-36 shrink-0 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
-                {item.product?.imageCover ? (
-                  <img
-                    src={item.product.imageCover}
-                    alt={item.product.title}
-                    className="w-full h-full object-contain p-2"
-                  />
-                ) : (
-                  <span className="text-xs text-gray-400">No image</span>
-                )}
-              </div>
+              <Avatar className="w-36 h-36  shrink-0">
+                <AvatarImage
+                  src={order.customer.image}
+                  className="object-cover"
+                />
+                <AvatarFallback className=" text-3xl text-gray-300 bg-gray-100">
+                  {order.customer.name?.[0] || "?"}
+                </AvatarFallback>
+              </Avatar>
 
-              {/* Fields */}
               <div className="flex-1 space-y-2">
-                <InfoBox
-                  label="Name"
-                  value={item.product?.title || "Unknown"}
-                />
-                <InfoBox
-                  label="Category name"
-                  value={
-                    <span className="capitalize">
-                      {item.product?.category || " "}
-                    </span>
-                  }
-                />
+                <Field label="Name" value={order.customer.name} />
                 <div className="grid grid-cols-2 gap-2">
-                  <InfoBox label="Price" value={`${item.price} $`} />
-                  <InfoBox label="Quantity" value={item.quantity} />
+                  <Field label="Gender" value={order.customer.gender} />
+                  <Field
+                    label="Birthday"
+                    value={formatDate(order.customer.birthday)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Mobile" value={order.customer.mobile || "—"} />
+                  <Field label="Email" value={order.customer.email || "—"} />
                 </div>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* Products */}
+        {order.cartItems.map((item, i) => (
+          <Card key={item._id} className="rounded-2xl shadow-none">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-[#1e3a8a] text-sm">
+                Product {i + 1}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                <div className="w-36 h-36 border rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
+                  {item.product.imageCover ? (
+                    <img
+                      src={item.product.imageCover}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <span className="text-xs text-gray-400">No image</span>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Field label="Name" value={item.product.title} />
+                  <Field label="Category" value={item.product.category} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Price" value={`${item.price} $`} />
+                    <Field label="Qty" value={item.quantity} />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
