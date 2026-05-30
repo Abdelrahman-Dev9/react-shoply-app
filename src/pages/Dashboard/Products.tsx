@@ -1,5 +1,5 @@
-import CurrentProductsTable from "@/components/products/CurrentProductsTable";
 import CreateProduct from "@/components/products/CreateProduct";
+import CurrentProductsTable from "@/components/products/CurrentProductsTable";
 import SearchBar from "@/components/products/SearchBar";
 import { useFilteredProducts } from "@/hooks/useFilteredProducts";
 import { useGetProductsQuery } from "@/redux/services/productApi";
@@ -17,18 +17,11 @@ const ProductsPage = () => {
 
   const filteredProducts = useFilteredProducts(data?.data ?? []);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center gap-2">
-        <Loader2 className="animate-spin text-[#1e3a8a]" />
-        <span>Loading products...</span>
-      </div>
-    );
-  }
-
   if (isError) {
     return (
-      <div className="p-6 text-red-500">Failed to load products. Please try again.</div>
+      <div className="p-6 text-red-500">
+        Failed to load products. Please try again.
+      </div>
     );
   }
 
@@ -51,7 +44,15 @@ const ProductsPage = () => {
           </button>
         </div>
 
-        <CurrentProductsTable products={filteredProducts} />
+        <div className="relative min-h-[400px]">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
+            </div>
+          )}
+
+          <CurrentProductsTable products={filteredProducts} />
+        </div>
       </div>
 
       {open && <CreateProduct onClose={() => setOpen(false)} />}

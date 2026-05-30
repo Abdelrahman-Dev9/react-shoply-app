@@ -2,14 +2,16 @@ import CategoryDetails from "@/components/category/CategoryDetails";
 import CreateCategory from "@/components/category/CreateCategory";
 import { useGetCategoriesQuery } from "@/redux/services/categoryApi";
 import type { Category } from "@/types/category.types";
-import { Plus, Search } from "lucide-react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
 
 const CategoryPage = () => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
 
   const { data, isLoading } = useGetCategoriesQuery({
     keyword: search,
@@ -50,14 +52,17 @@ const CategoryPage = () => {
         </div>
 
         {/* TABLE */}
-        <div className="overflow-x-auto">
+
+        <div className="relative min-h-[300px] overflow-x-auto">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
+            </div>
+          )}
+
           <table className="w-full text-sm">
             <tbody>
-              {isLoading ? (
-                <tr>
-                  <td className="p-4">Loading...</td>
-                </tr>
-              ) : (
+              {!isLoading &&
                 data?.data?.map((cat: Category) => (
                   <tr
                     key={cat._id}
@@ -71,9 +76,17 @@ const CategoryPage = () => {
                         className="h-[80px] w-[80px] object-contain"
                       />
                     </td>
+
                     <td className="p-3 font-medium">{cat.name}</td>
                   </tr>
-                ))
+                ))}
+
+              {!isLoading && data?.data?.length === 0 && (
+                <tr>
+                  <td colSpan={2} className="py-10 text-center text-gray-500">
+                    No categories found
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

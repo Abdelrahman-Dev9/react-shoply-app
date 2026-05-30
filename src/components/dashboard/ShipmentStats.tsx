@@ -45,7 +45,7 @@ const StatsGrid = () => {
           <div className="mt-6">
             <div className="h-[36px] flex items-center">
               {isLoading ? (
-                <Loader2 className="w-7 h-7 animate-spin " />
+                <Loader2 className="w-7 h-7 animate-spin text-[#1e3a8a] " />
               ) : (
                 <h2 className="text-3xl font-extrabold text-gray-900 leading-none">
                   {stat.value ?? 0}

@@ -2,7 +2,7 @@ import {
   useGetNotificationsQuery,
   useSendNotificationMutation,
 } from "@/redux/services/notificationApi";
-import { Plus, Search } from "lucide-react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 type Notification = {
@@ -96,7 +96,13 @@ const NotificationPage = () => {
         </div>
 
         {/* Table */}
-        <div className="w-full overflow-x-auto">
+        <div className="relative min-h-[350px] w-full overflow-x-auto">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
+            </div>
+          )}
+
           <table className="w-full text-sm">
             <thead>
               <tr className="text-gray-700 text-sm">
@@ -111,13 +117,7 @@ const NotificationPage = () => {
             </thead>
 
             <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="text-center py-6 text-gray-400">
-                    Loading...
-                  </td>
-                </tr>
-              ) : filteredNotifications.length > 0 ? (
+              {!isLoading && filteredNotifications.length > 0 ? (
                 filteredNotifications.map((n: Notification) => {
                   const isActive = n._id === activeId;
 
@@ -145,13 +145,13 @@ const NotificationPage = () => {
                     </tr>
                   );
                 })
-              ) : (
+              ) : !isLoading ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-6 text-gray-400">
+                  <td colSpan={4} className="py-10 text-center text-gray-400">
                     No notifications found
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

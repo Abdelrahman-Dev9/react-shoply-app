@@ -1,11 +1,11 @@
-import AdminDetailModal from "@/components/admins/AdminDetailModal";
 import AddAdmin from "@/components/admins/AddAdmin";
+import AdminDetailModal from "@/components/admins/AdminDetailModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { useGetAdminsQuery } from "@/redux/services/adminApi";
 import type { Admin } from "@/types/admin.types";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const AdminsPage = () => {
@@ -45,12 +45,19 @@ const AdminsPage = () => {
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h1 className="text-2xl font-bold">Admins ({admins.length})</h1>
 
-          <Input
-            placeholder="Search admins..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
-          />
+          <div className="relative w-full max-w-sm">
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+
+            <Input
+              placeholder="Search admins..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
 
           <button
             onClick={() => setOpenAddModal(true)}
@@ -64,8 +71,7 @@ const AdminsPage = () => {
         {/* TABLE */}
         {isLoading ? (
           <div className="flex items-center justify-center gap-2 py-20">
-            <Loader2 className="animate-spin" />
-            <span>Loading admins...</span>
+            <Loader2 className="animate-spin text-[#1e3a8a] h-8 w-8" />
           </div>
         ) : filteredAdmins.length === 0 ? (
           <div className="py-20 text-center text-gray-500">No admins found</div>

@@ -109,7 +109,7 @@ const ReportsPage = () => {
               <tr>
                 <td colSpan={3} className="relative py-16">
                   <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-                    <Loader2 className="h-8 w-8 animate-spin " />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
                   </div>
                 </td>
               </tr>

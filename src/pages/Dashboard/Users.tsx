@@ -75,8 +75,7 @@ const UsersPage = () => {
         {/* LOADING */}
         {isLoading ? (
           <div className="flex items-center justify-center gap-2 py-20">
-            <Loader2 className="animate-spin" />
-            <span>Loading users...</span>
+            <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="py-20 text-center text-gray-500">No users found</div>

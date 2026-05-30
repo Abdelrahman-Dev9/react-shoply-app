@@ -122,7 +122,7 @@ const ChartAreaDefault = () => {
 
                   <div className="mt-3 h-[32px] flex items-center">
                     {isLoading ? (
-                      <Loader2 className="w-6 h-6 animate-spin " />
+                      <Loader2 className="w-7 h-7 animate-spin text-[#1e3a8a] " />
                     ) : (
                       <p className="text-[22px] font-bold text-[#3E325C]">
                         {taxData?.shippingPrice}
@@ -151,7 +151,7 @@ const ChartAreaDefault = () => {
 
                   <div className="mt-3 h-[32px] flex items-center">
                     {isLoading ? (
-                      <Loader2 className="w-6 h-6 animate-spin " />
+                      <Loader2 className="w-7 h-7 animate-spin text-[#1e3a8a] " />
                     ) : (
                       <p className="text-[22px] font-bold text-[#3E325C]">
                         {taxData?.taxPrice}
@@ -188,7 +188,7 @@ const ChartAreaDefault = () => {
           <CardContent className="relative p-0">
             {isLoading && (
               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-[1px]">
-                <Loader2 className="w-8 h-8 animate-spin " />
+                <Loader2 className="w-7 h-7 animate-spin text-[#1e3a8a] " />
               </div>
             )}
 
@@ -247,7 +247,7 @@ const ChartAreaDefault = () => {
             <DialogFooter>
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-7 h-7 animate-spin text-[#1e3a8a]" />
                 ) : (
                   "Save"
                 )}

@@ -45,7 +45,7 @@ const BarChartComponent = () => {
     <div className="relative h-[300px] w-full">
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px] rounded-xl">
-          <Loader2 className="w-8 h-8 animate-spin" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#1e3a8a]" />
         </div>
       )}
 

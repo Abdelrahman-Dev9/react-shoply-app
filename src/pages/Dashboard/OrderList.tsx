@@ -1,6 +1,6 @@
 import OrderDetail, { type Order } from "@/components/orderList/OrderDetails";
 import { useGetOrdersQuery } from "@/redux/services/ordersApi";
-import { Filter, Search } from "lucide-react";
+import { Filter, Loader2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const OrderList = () => {
@@ -56,14 +56,6 @@ const OrderList = () => {
 
   const selectedOrder = filtered[safeSelectedIndex];
 
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-gray-500">
-        Loading...
-      </div>
-    );
-  }
-
   if (isError) {
     return (
       <div className="h-screen flex items-center justify-center text-red-500">
@@ -101,31 +93,40 @@ const OrderList = () => {
         </div>
 
         {/* Orders */}
-        <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-          {filtered.map((order, i) => (
-            <button
-              key={order.id}
-              onClick={() => setSelectedIndex(i)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all ${
-                safeSelectedIndex === i ? "bg-[#eff3ff]" : "hover:bg-gray-50"
-              }`}
-            >
-              <div>
-                <p
-                  className={`text-sm font-semibold ${
-                    safeSelectedIndex === i ? "text-[#1e3a8a]" : "text-gray-800"
-                  }`}
-                >
-                  ID {order.id}
-                </p>
+        <div className="relative flex-1 overflow-y-auto space-y-2 pr-1">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a]" />
+            </div>
+          )}
 
-                <p className="text-xs text-gray-400 mt-0.5">{order.date}</p>
-              </div>
-            </button>
-          ))}
+          {!isLoading &&
+            filtered.map((order, i) => (
+              <button
+                key={order.id}
+                onClick={() => setSelectedIndex(i)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all ${
+                  safeSelectedIndex === i ? "bg-[#eff3ff]" : "hover:bg-gray-50"
+                }`}
+              >
+                <div>
+                  <p
+                    className={`text-sm font-semibold ${
+                      safeSelectedIndex === i
+                        ? "text-[#1e3a8a]"
+                        : "text-gray-800"
+                    }`}
+                  >
+                    ID {order.id}
+                  </p>
 
-          {filtered.length === 0 && (
-            <p className="text-sm text-gray-400 text-center mt-8">
+                  <p className="mt-0.5 text-xs text-gray-400">{order.date}</p>
+                </div>
+              </button>
+            ))}
+
+          {!isLoading && filtered.length === 0 && (
+            <p className="mt-8 text-center text-sm text-gray-400">
               No orders found
             </p>
           )}

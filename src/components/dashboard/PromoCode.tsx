@@ -60,7 +60,7 @@ const PromoCodePage = () => {
             {/* LOADING OVERLAY */}
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm z-10">
-                <Loader2 className="h-8 w-8 animate-spin " />
+                <Loader2 className="h-8 w-8 animate-spin text-[#1e3a8a] " />
               </div>
             )}
 
