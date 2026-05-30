@@ -1,20 +1,30 @@
-import { Calendar, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { CalendarDays, ChevronDown } from "lucide-react";
 
-// ── Types ───────────────────────────────────────
-export type Status = "Active" | "Pending" | "Completed";
+export type CartItem = {
+  _id: string;
+  product: {
+    _id: string;
+    title: string;
+    imageCover: string;
+    category: string;
+  };
+  quantity: number;
+  price: number;
+};
 
 export type Order = {
   id: string;
   date: string;
-  status: Status;
-  product: {
-    image: string;
-    name: string;
-    price: number;
-    quantity: number;
-    priceAfterDiscount: number;
-  };
+  status: "Active" | "Completed" | "Pending";
+  taxPrice: number;
+  shippingPrice: number;
+  totalOrderPrice: number;
+  paymentMethodType: string;
+  isPaid: boolean;
+  paidAt: string;
+  isDelivered: boolean;
+  deliveredAt: string;
+  cartItems: CartItem[];
   customer: {
     image: string;
     name: string;
@@ -24,178 +34,235 @@ export type Order = {
     email: string;
   };
   address: string;
-  arrivalDate: string;
+  shippingPhone: string;
+  shippingCity: string;
+  shippingPostalCode: string;
 };
 
-// ── Status Styles ───────────────────────────────
-const orderStatusStyles: Record<Status, string> = {
-  Active: "border border-[#1e3a8a] text-[#1e3a8a] bg-[#eff3ff] px-3 py-1",
-  Pending: "border border-amber-400 text-amber-500 bg-amber-50 px-3 py-1",
-  Completed: "border border-green-500 text-green-600 bg-green-50 px-3 py-1",
-};
+// ─── Reusable sub-components ────────────────────────────────────────────────
 
-// ── Status Badge ────────────────────────────────
-export function OrderStatusBadge({ status }: { status: Status }) {
-  return (
-    <span
-      className={`rounded-full text-xs font-semibold ${orderStatusStyles[status]}`}
-    >
-      {status}
-    </span>
-  );
-}
-
-// ── InfoBox ─────────────────────────────────────
-function InfoBox({
-  children,
+const InfoBox = ({
+  label,
+  value,
   className = "",
 }: {
-  children: React.ReactNode;
+  label: string;
+  value: string | number | React.ReactNode;
   className?: string;
-}) {
-  return (
-    <div
-      className={`border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-800 ${className}`}
-    >
-      {children}
+}) => (
+  <div
+    className={`border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-1 text-sm ${className}`}
+  >
+    <span className="font-semibold text-gray-800 shrink-0">{label}:</span>
+    <span className="text-gray-700 truncate">{value}</span>
+  </div>
+);
+
+const BoolBox = ({ label, value }: { label: string; value: boolean }) => (
+  <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
+    <span>
+      <span className="font-semibold text-gray-800">{label}: </span>
+      <span className="text-[#1e3a8a] font-semibold">
+        {value ? "True" : "False"}
+      </span>
+    </span>
+    <button className="w-8 h-8 bg-[#1e3a8a] rounded-lg flex items-center justify-center shrink-0">
+      <ChevronDown size={16} className="text-white" />
+    </button>
+  </div>
+);
+
+const DateBox = ({ label, value }: { label: string; value: string }) => (
+  <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
+    <span>
+      <span className="font-semibold text-gray-800">{label}: </span>
+      <span className="text-gray-700">
+        {value
+          ? new Date(value).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            })
+          : " "}
+      </span>
+    </span>
+    <div className="w-8 h-8 bg-[#1e3a8a] rounded-lg flex items-center justify-center shrink-0">
+      <CalendarDays size={15} className="text-white" />
     </div>
-  );
-}
+  </div>
+);
 
-// ── Order Detail ────────────────────────────────
-export default function OrderDetail({ order }: { order: Order }) {
-  const [status, setStatus] = useState<Status>(order.status);
+const getStatusStyle = (status: string) => {
+  if (status === "Completed") return "border border-green-500 text-green-600";
+  if (status === "Active") return "border border-[#1e3a8a] text-[#1e3a8a]";
+  return "border border-gray-400 text-gray-600";
+};
 
+// ─── Main component ──────────────────────────────────────────────────────────
+
+const OrderDetail = ({ order }: { order: Order }) => {
   return (
-    <div className="flex-1 bg-white rounded-2xl p-6 overflow-y-auto space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-[#1e3a8a] font-semibold text-lg">
-          Order ID: {order.id}
-        </h2>
+    <div className="flex-1 bg-white rounded-2xl overflow-y-auto shadow-sm">
+      <div className="p-6 space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-[#1e3a8a] font-semibold text-base">
+            Order ID: #{order.id}
+          </h2>
+          <span
+            className={`text-sm px-5 py-1.5 rounded-full bg-white font-medium ${getStatusStyle(
+              order.status
+            )}`}
+          >
+            {order.status}
+          </span>
+        </div>
 
-        <OrderStatusBadge status={status} />
-      </div>
+        {/* Tax Price / Shipping Price */}
+        <div className="grid grid-cols-2 gap-3">
+          <InfoBox label="Tax Price" value={`${order.taxPrice} $`} />
+          <InfoBox label="Shipping Price" value={`${order.shippingPrice} $`} />
+        </div>
 
-      {/* Product */}
-      <div className="border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-4">
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-3 flex items-center justify-center w-full sm:w-48 shrink-0 min-h-[160px]">
-          <img
-            src={order.product.image}
-            alt={order.product.name}
-            className="w-full max-w-[160px] object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                "https://placehold.co/160x100?text=Product";
-            }}
+        {/* Total Order Price / Payment Method */}
+        <div className="grid grid-cols-2 gap-3">
+          <InfoBox
+            label="Total Order Price"
+            value={`${order.totalOrderPrice} $`}
           />
-        </div>
-
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <InfoBox className="sm:col-span-2">
-            <span className="font-semibold">Name:</span> {order.product.name}
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Price:</span> {order.product.price}{" "}
-            $
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Quantity:</span>{" "}
-            {order.product.quantity}
-          </InfoBox>
-
-          <InfoBox className="sm:col-span-2">
-            <span className="font-semibold">After Discount:</span>{" "}
-            {order.product.priceAfterDiscount} $
-          </InfoBox>
-        </div>
-      </div>
-
-      {/* Customer */}
-      <div className="border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-4">
-        <div className="w-full sm:w-48 shrink-0 rounded-xl overflow-hidden min-h-[180px] bg-gray-100">
-          <img
-            src={
-              order.customer.image ||
-              "https://placehold.co/200x200?text=Customer"
+          <InfoBox
+            label="Payment Method Type"
+            value={
+              <span className="capitalize">{order.paymentMethodType}</span>
             }
-            alt={order.customer.name}
-            className="w-full h-full object-cover"
           />
         </div>
 
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <InfoBox className="sm:col-span-2">
-            <span className="font-semibold">Customer Name:</span>{" "}
-            {order.customer.name}
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Gender:</span>{" "}
-            {order.customer.gender}
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Birthday:</span>{" "}
-            {order.customer.birthday
-              ? new Date(order.customer.birthday).toLocaleDateString()
-              : "N/A"}
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Mobile:</span>{" "}
-            {order.customer.mobile}
-          </InfoBox>
-
-          <InfoBox>
-            <span className="font-semibold">Email:</span> {order.customer.email}
-          </InfoBox>
+        {/* Paid + Paid At */}
+        <div className="grid grid-cols-2 gap-3">
+          <BoolBox label="Paid" value={order.isPaid} />
+          <DateBox label="Paid At" value={order.paidAt} />
         </div>
-      </div>
 
-      {/* Address */}
-      <InfoBox>
-        <span className="font-semibold">Address:</span> {order.address}
-      </InfoBox>
+        {/* Delivered + Delivered At */}
+        <div className="grid grid-cols-2 gap-3">
+          <BoolBox label="Delivered" value={order.isDelivered} />
+          <DateBox label="Delivered At" value={order.deliveredAt} />
+        </div>
 
-      {/* Footer */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between">
-          <span className="text-sm text-gray-800">
-            <span className="font-semibold">Arrival:</span>{" "}
-            {new Date(order.arrivalDate).toLocaleDateString()}
-          </span>
+        {/* Address */}
+        <InfoBox label="Address" value={order.address} />
 
-          <div className="w-8 h-8 bg-[#1e3a8a] rounded-lg flex items-center justify-center">
-            <Calendar size={15} className="text-white" />
+        {/* Shipping details */}
+        <div className="grid grid-cols-3 gap-3">
+          <InfoBox label="Phone" value={order.shippingPhone} />
+          <InfoBox label="City" value={order.shippingCity} />
+          <InfoBox label="Postal Code" value={order.shippingPostalCode} />
+        </div>
+
+        {/* Customer Data */}
+        <div className="border border-gray-200 rounded-2xl p-4">
+          <h3 className="text-[#1e3a8a] font-semibold text-sm mb-3">
+            Customer Data
+          </h3>
+          <div className="flex gap-4">
+            {/* Avatar */}
+            <div className="w-36 h-36 shrink-0 border border-gray-200 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+              {order.customer.image ? (
+                <img
+                  src={order.customer.image}
+                  alt={order.customer.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl font-bold text-gray-300">
+                  {order.customer.name?.[0]?.toUpperCase() || "?"}
+                </span>
+              )}
+            </div>
+
+            {/* Fields */}
+            <div className="flex-1 space-y-2">
+              <InfoBox label="Customer Name" value={order.customer.name} />
+              <div className="grid grid-cols-2 gap-2">
+                <InfoBox
+                  label="Gender"
+                  value={
+                    <span className="capitalize">{order.customer.gender}</span>
+                  }
+                />
+                <InfoBox
+                  label="Birthday"
+                  value={
+                    order.customer.birthday
+                      ? new Date(order.customer.birthday).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "numeric",
+                          }
+                        )
+                      : " "
+                  }
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <InfoBox label="Mobile" value={order.customer.mobile || " "} />
+                <InfoBox label="Email" value={order.customer.email || " "} />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between">
-          <span className="text-sm text-gray-800">
-            <span className="font-semibold">Status:</span> {status}
-          </span>
+        {/* Products   one card per cart item */}
+        {order.cartItems.map((item, idx) => (
+          <div
+            key={item._id}
+            className="border border-gray-200 rounded-2xl p-4"
+          >
+            <h3 className="text-[#1e3a8a] font-semibold text-sm mb-3">
+              Product {idx + 1}
+            </h3>
+            <div className="flex gap-4">
+              {/* Image */}
+              <div className="w-36 h-36 shrink-0 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
+                {item.product?.imageCover ? (
+                  <img
+                    src={item.product.imageCover}
+                    alt={item.product.title}
+                    className="w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">No image</span>
+                )}
+              </div>
 
-          <div className="relative">
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as Status)}
-              className="appearance-none bg-[#1e3a8a] text-white rounded-lg px-3 py-2 text-sm outline-none cursor-pointer"
-            >
-              <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
-              <option value="Completed">Completed</option>
-            </select>
-
-            <ChevronDown
-              size={14}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none"
-            />
+              {/* Fields */}
+              <div className="flex-1 space-y-2">
+                <InfoBox
+                  label="Name"
+                  value={item.product?.title || "Unknown"}
+                />
+                <InfoBox
+                  label="Category name"
+                  value={
+                    <span className="capitalize">
+                      {item.product?.category || " "}
+                    </span>
+                  }
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <InfoBox label="Price" value={`${item.price} $`} />
+                  <InfoBox label="Quantity" value={item.quantity} />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
-}
+};
+
+export default OrderDetail;
