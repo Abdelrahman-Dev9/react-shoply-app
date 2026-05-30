@@ -22,7 +22,6 @@ const ProfileAdmin = () => {
   const { data, isLoading } = useGetAdminByIdQuery(adminId || "");
 
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
-
   const [updatePassword, { isLoading: isUpdatingPassword }] =
     useUpdatePasswordMutation();
 
@@ -31,7 +30,6 @@ const ProfileAdmin = () => {
 
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-
   const [editableField, setEditableField] = useState<string | null>(null);
 
   const [show, setShow] = useState<Record<PasswordKey, boolean>>({
@@ -104,7 +102,6 @@ const ProfileAdmin = () => {
 
       await updateProfile(formData).unwrap();
 
-      // password only if enabled
       if (values.current && values.newPass && values.confirm) {
         await updatePassword({
           oldPassword: values.current,
@@ -126,112 +123,144 @@ const ProfileAdmin = () => {
   }
 
   return (
-    <div className="flex min-h-screen justify-center bg-gray-100 p-6">
-      <div className="w-full space-y-6 rounded-2xl bg-white p-6 shadow-lg">
-        <h2 className="text-xl font-semibold">Profile Admin</h2>
+    <div className="min-h-screen bg-gray-100 p-6">
+      {/* Page Title Card */}
+      <div className="mb-4 rounded-2xl bg-white px-6 py-4 shadow-sm">
+        <h2 className="text-lg font-bold text-[#1e2d6b]">Profile admin</h2>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* AVATAR */}
-          <div
-            onClick={() => fileRef.current?.click()}
-            className="group relative flex h-[336px] w-[315px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed bg-gray-100"
-          >
-            {avatar || data?.admin?.profileImage ? (
-              <img
-                src={avatar || data?.admin?.profileImage}
-                className="h-full w-full object-cover"
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Top Section: Avatar + Info Fields */}
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <div className="flex gap-6">
+            {/* Avatar */}
+            <div
+              onClick={() => fileRef.current?.click()}
+              className="group relative flex-shrink-0 h-[300px] w-[280px] cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50"
+            >
+              {avatar || data?.admin?.profileImage ? (
+                <img
+                  src={avatar || data?.admin?.profileImage}
+                  className="h-full w-full object-cover"
+                  alt="Profile"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <span className="text-sm text-gray-400">Upload Image</span>
+                </div>
+              )}
+
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                Change
+              </div>
+
+              <input
+                ref={fileRef}
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleAvatarChange}
               />
-            ) : (
-              <span className="text-sm text-gray-400">Upload Image</span>
-            )}
-
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100">
-              Change
             </div>
 
-            <input
-              ref={fileRef}
-              type="file"
-              hidden
-              onChange={handleAvatarChange}
-            />
-          </div>
+            {/* Info Fields */}
+            <div className="flex flex-1 flex-col justify-center space-y-5">
+              {infoFields.map(({ label, key, placeholder }) => (
+                <div key={key}>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    {label}
+                  </label>
 
-          {/* INFO FIELDS (RESTORED UI) */}
-          <div className="space-y-4">
-            {infoFields.map(({ label, key, placeholder }) => (
-              <div key={key}>
-                <label className="text-sm text-gray-600">{label}</label>
+                  <div className="relative">
+                    <input
+                      placeholder={placeholder}
+                      {...register(key as any)}
+                      disabled={editableField !== key}
+                      onBlur={() => setEditableField(null)}
+                      className={`w-full rounded-xl px-4 py-3 pr-10 text-sm outline-none transition-all
+                        ${
+                          editableField === key
+                            ? "bg-white ring-2 ring-[#1e2d6b]"
+                            : "cursor-not-allowed bg-gray-100 text-gray-500"
+                        }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEditableField((p) => (p === key ? null : key))
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                  </div>
 
-                <div className="relative">
-                  <input
-                    placeholder={placeholder}
-                    {...register(key as any)}
-                    disabled={editableField !== key}
-                    onBlur={() => setEditableField(null)}
-                    className={`mt-1 w-full rounded-lg px-3 py-2 pr-10 outline-none transition
-                      ${
-                        editableField === key
-                          ? "bg-white ring-2 ring-indigo-500"
-                          : "bg-gray-100 cursor-not-allowed"
-                      }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setEditableField((p) => (p === key ? null : key))
-                    }
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    <Pencil size={18} />
-                  </button>
+                  {errors[key as keyof ProfileFormData]?.message && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors[key as keyof ProfileFormData]?.message}
+                    </p>
+                  )}
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
-                <p className="text-red-500 text-sm">
-                  {errors[key as keyof ProfileFormData]?.message}
+        {/* Password Fields — each in its own card */}
+        <div className="rounded-2xl bg-white px-6 py-4 shadow-sm space-y-4">
+          {passwordFields.map(({ label, key }) => (
+            <div key={key}>
+              <label className="mb-2 block text-sm font-semibold text-gray-800">
+                {label}
+              </label>
+
+              <div className="relative">
+                <input
+                  type={show[key] ? "text" : "password"}
+                  {...register(key)}
+                  className="w-full rounded-xl bg-gray-100 px-4 py-3 pr-12 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-[#1e2d6b]"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => toggle(key)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-[#1e2d6b] text-white"
+                >
+                  {show[key] ? (
+                    <IoEyeOutline size={16} />
+                  ) : (
+                    <IoEyeOffOutline size={16} />
+                  )}
+                </button>
+              </div>
+
+              {errors[key]?.message && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors[key]?.message}
                 </p>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          ))}
 
-          {/* PASSWORD FIELDS */}
-
-          <div className="space-y-4">
-            {passwordFields.map(({ label, key }) => (
-              <div key={key}>
-                <label className="text-sm text-gray-600">{label}</label>
-
-                <div className="relative mt-1">
-                  <input
-                    type={show[key] ? "text" : "password"}
-                    {...register(key)}
-                    className="w-full rounded-lg bg-gray-100 px-3 py-2"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => toggle(key)}
-                    className="absolute right-3 top-3"
-                  >
-                    {show[key] ? <IoEyeOutline /> : <IoEyeOffOutline />}
-                  </button>
-                </div>
-
-                <p className="text-red-500 text-sm">{errors[key]?.message}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* SAVE BUTTON */}
+          {/* Save Button */}
           <button
             type="submit"
             disabled={isUpdating || isUpdatingPassword}
-            className="w-full rounded-xl bg-indigo-600 py-3 text-white"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1e2d6b] py-4 text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 mt-10"
           >
-            {isUpdating || isUpdatingPassword ? "Saving..." : "Save Changes"}
+            {isUpdating || isUpdatingPassword ? (
+              "Saving..."
+            ) : (
+              <>
+                <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-white text-xs">
+                  ✓
+                </span>
+                Save password
+              </>
+            )}
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };
