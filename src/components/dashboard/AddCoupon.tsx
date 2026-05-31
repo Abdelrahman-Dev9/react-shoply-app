@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateCouponMutation } from "@/redux/services/dashBoardApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronUp, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,7 +31,6 @@ const AddCouponDialog = ({ open, setOpen }: Props) => {
   const [tags, setTags] = useState<string[]>([]);
   const [showTagInput, setShowTagInput] = useState(false);
   const [tagInputValue, setTagInputValue] = useState("");
-  const [specificMode, setSpecificMode] = useState(true);
 
   const form = useForm<CouponForm>({
     resolver: zodResolver(couponSchema),
@@ -218,22 +217,9 @@ const AddCouponDialog = ({ open, setOpen }: Props) => {
                 onClick={() => setShowTagInput(true)}
                 className="rounded-full border border-dashed border-blue-300 px-3 py-1 text-xs text-gray-500 hover:border-blue-400 hover:text-gray-600 transition-colors"
               >
-                Add new name
+                Add new Id
               </button>
             )}
-
-            <button
-              type="button"
-              onClick={() => setSpecificMode((v) => !v)}
-              className="ml-auto flex items-center gap-1 rounded-full bg-[#1e3a8a] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#1a3275] transition-colors shrink-0"
-            >
-              Specific name
-              <ChevronUp
-                className={`h-3 w-3 transition-transform ${
-                  specificMode ? "" : "rotate-180"
-                }`}
-              />
-            </button>
           </div>
 
           {/* FOOTER */}
