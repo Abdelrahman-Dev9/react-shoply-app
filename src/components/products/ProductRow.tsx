@@ -34,11 +34,11 @@ const ProductRow = memo(({ product }: Props) => {
       </td>
 
       <td className="px-4 py-3 font-medium text-gray-900">
-        {product.priceAfterDiscount ? `SR ${product.priceAfterDiscount}` : "-"}
+        {product.priceAfterDiscount ? `EG ${product.priceAfterDiscount}` : "-"}
       </td>
 
       <td className="px-4 py-3 font-medium text-gray-900">
-        SR {product.price}
+        EG {product.price}
       </td>
 
       <td className="px-4 py-3">
